@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ps;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Company;
+use App\Models\ProjectType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -29,7 +30,8 @@ class ProjectController extends Controller
     {
         $companyId = auth()->user()->company_id;
 
-        $projects = Project::where('company_id', $companyId);
+        // Eager load projectType relation
+        $projects = Project::with('projectType')->where('company_id', $companyId);
 
         return DataTables::of($projects)
             ->addColumn('project_info', function ($row) {
@@ -40,7 +42,9 @@ class ProjectController extends Controller
                 $ownerLabel = $row->owner_label ? '<br><small class="text-muted">Label: ' . e($row->owner_label) . '</small>' : '';
                 return '<div>' . e($row->owner_name ?? 'NA') . $ownerLabel . '</div>';
             })
-            ->addColumn('project_type_col', fn($row) => e($row->project_type ?? 'NA'))
+            ->addColumn('project_type_col', function ($row) {
+                return '<div class="fw-semibold text-secondary">' . e($row->projectType->type_name ?? 'NA') . '</div>';
+            })
             ->addColumn('address_col', fn($row) => e($row->project_address ?? 'NA'))
             ->addColumn('timeline', function ($row) {
                 $start = $row->start_date ? \Carbon\Carbon::parse($row->start_date)->format('d-m-Y') : '-';
@@ -60,7 +64,7 @@ class ProjectController extends Controller
                 $html .= '</div>';
                 return $html;
             })
-            ->rawColumns(['project_info', 'owner_info', 'timeline', 'status_badge', 'action'])
+            ->rawColumns(['project_info', 'owner_info', 'project_type_col', 'timeline', 'status_badge', 'action'])
             ->make(true);
     }
 
@@ -72,10 +76,11 @@ class ProjectController extends Controller
         $companyId = auth()->user()->company_id;
 
         $data['title']        = 'PS - Add New Project';
-        $data['projectTypes'] = \App\Models\ProjectType::where('company_id', $companyId)
+        $data['projectTypes'] = ProjectType::where('company_id', $companyId)
             ->where('status', 1)
             ->orderBy('type_name', 'asc')
             ->get();
+
         return view('ps.add_project', $data);
     }
 
@@ -136,7 +141,7 @@ class ProjectController extends Controller
 
         $data['title']        = 'PS - Edit Project';
         $data['project']      = Project::where('company_id', $companyId)->findOrFail($id);
-        $data['projectTypes'] = \App\Models\ProjectType::where('company_id', $companyId)
+        $data['projectTypes'] = ProjectType::where('company_id', $companyId)
             ->where('status', 1)
             ->orderBy('type_name', 'asc')
             ->get();
@@ -243,7 +248,7 @@ class ProjectController extends Controller
     public function exportPdf(Request $request)
     {
         $companyId = auth()->user()->company_id;
-        $projects = Project::where('company_id', $companyId)->get();
+        $projects = Project::with('projectType')->where('company_id', $companyId)->get();
 
         $company = Company::find($companyId);
 

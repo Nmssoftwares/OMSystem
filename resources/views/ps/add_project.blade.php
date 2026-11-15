@@ -113,7 +113,6 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        // Clear error on input change
         $('input, select, textarea').on('input change', function() {
             $(this).removeClass('is-invalid');
             let nameAttr = $(this).attr('name');
@@ -122,14 +121,12 @@
             }
         });
 
-        // Form Submit via AJAX
         $('#addProjectForm').on('submit', function(e) {
             e.preventDefault();
             let isValid = true;
             $('.error').html('');
             $('.form-control, .form-select').removeClass('is-invalid');
 
-            // Client-side validation for required fields
             if (!$('#project_name').val().trim()) {
                 $('#project_name_error').text('Project name is required.');
                 $('#project_name').addClass('is-invalid');
@@ -209,7 +206,6 @@
             });
         });
 
-        // Clear Form Button
         $('#clearBtn').on('click', () => $('#addProjectForm')[0].reset());
     });
 </script>

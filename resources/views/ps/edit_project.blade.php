@@ -127,7 +127,6 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        // Clear error on input change
         $('input, select, textarea').on('input change', function() {
             $(this).removeClass('is-invalid');
             let nameAttr = $(this).attr('name');
@@ -136,7 +135,6 @@
             }
         });
 
-        // Update Form Submit via AJAX
         $('#editProjectForm').on('submit', function(e) {
             e.preventDefault();
             let isValid = true;
