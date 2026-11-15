@@ -593,12 +593,17 @@
                btn.prop('disabled', false).text('Save Changes');
                $('#nms-loader-overlay').removeClass('active');
                if (xhr.status === 422 && xhr.responseJSON.errors) {
+                  let firstErr = '';
                   $.each(xhr.responseJSON.errors, function(key, val) {
                      $('#' + key + '_error').html(val[0]);
                      $('#' + key).addClass('is-invalid');
+                     if (!firstErr) firstErr = val[0];
                   });
+                  if (typeof showAlert === 'function') showAlert('danger', firstErr);
                } else {
-                  alert(xhr.responseJSON?.message || 'Error updating profile.');
+                  let errText = xhr.responseJSON?.message || 'Error updating profile.';
+                  if (typeof showAlert === 'function') showAlert('danger', errText);
+                  else alert(errText);
                }
             }
          });
@@ -676,10 +681,13 @@
                btn.prop('disabled', false).text('Update Password');
                $('#nms-loader-overlay').removeClass('active');
                if (xhr.status === 422 && xhr.responseJSON.errors) {
+                  let firstErr = '';
                   $.each(xhr.responseJSON.errors, function(key, val) {
                      $('#' + key + '_error').html(val[0]);
                      $('#' + key).addClass('is-invalid');
+                     if (!firstErr) firstErr = val[0];
                   });
+                  if (typeof showAlert === 'function') showAlert('danger', firstErr);
                } else {
                   if (typeof showAlert === 'function') showAlert('danger', 'Error updating password.');
                }

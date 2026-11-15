@@ -34,11 +34,21 @@ class LoginController extends Controller
          'password'         => 'required|string',
       ]);
 
-      $identifier = $request->login_identifier;
+      $identifier = trim($request->login_identifier);
 
-      // 1. Find User by email OR phone number
+      $cleanDigits = preg_replace('/\D/', '', $identifier);
+
+      // Formatted version agar database me hyphens ke sath save hota hai (e.g. 555-555-5555)
+      $formattedPhone = '';
+      if (strlen($cleanDigits) >= 10) {
+         $formattedPhone = substr($cleanDigits, 0, 3) . '-' . substr($cleanDigits, 3, 3) . '-' . substr($cleanDigits, 6, 4);
+      }
+
+      // 1. Find User by email OR phone number (Supports both raw digits and formatted phone)
       $user = User::where('email', $identifier)
          ->orWhere('phone', $identifier)
+         ->orWhere('phone', $cleanDigits)
+         ->orWhere('phone', $formattedPhone)
          ->first();
 
       if (!$user) {

@@ -11,7 +11,7 @@
 
                     <!-- 1. Account Information Section -->
                     <div class="section-title mt-0 mb-3 fw-bold text-dark" style="font-size: 15px;">
-                        <i class="bi bi-person-fill text-primary me-1"></i> 1. Edit Account Information
+                        <i class="bi bi-person-fill text-primary me-1"></i> Edit Account Information
                     </div>
 
                     <div class="row g-4 mb-4">
@@ -38,8 +38,8 @@
                         </div>
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" id="phone" name="phone" maxlength="12" placeholder=" " value="{{ old('phone', $user->contact_no ?? $user->phone) }}">
-                                <label class="form-label-joint">Contact Number</label>
+                                <input type="text" class="form-control" id="phone" name="phone" maxlength="12" placeholder=" " value="{{ old('phone', $user->contact_no ?? $user->phone) }}" required>
+                                <label class="form-label-joint">Contact Number*</label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="phone_error"></small>
                         </div>
@@ -137,8 +137,6 @@
         $('input, select').on('input change', function() {
             $(this).removeClass('is-invalid');
             let nameAttr = $(this).attr('name');
-
-            // Agar name me brackets [] hain toh unhe ignore karke error clear karo
             if (nameAttr) {
                 let cleanName = nameAttr.replace('[]', '');
                 $('#' + cleanName + '_error').html('');
@@ -168,6 +166,11 @@
                 $('#email').addClass('is-invalid');
                 isValid = false;
             }
+            if (!$('#phone').val().trim()) {
+                $('#phone_error').text('Contact number is required.');
+                $('#phone').addClass('is-invalid');
+                isValid = false;
+            }
             if ($('.module-checkbox').length > 0 && $('.module-checkbox:checked').length === 0) {
                 $('#modules_error').text('Please select at least one module.');
                 isValid = false;
@@ -194,27 +197,50 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    if (typeof showAlert === 'function') {
-                        showAlert('success', response.message);
+                    $('#nms-loader-overlay').removeClass('active');
+                    if (response.status === 'success') {
+                        if (typeof showAlert === 'function') {
+                            showAlert('success', response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                        setTimeout(() => {
+                            window.location.href = "{{ route('um.users.index') }}";
+                        }, 1000);
+                    } else {
+                        btn.prop('disabled', false).text('UPDATE');
+                        if (typeof showAlert === 'function') {
+                            showAlert('danger', response.message || 'Something went wrong.');
+                        }
                     }
-                    setTimeout(() => {
-                        window.location.href = "{{ route('um.users.index') }}";
-                    }, 1000);
                 },
                 error: function(xhr) {
                     btn.prop('disabled', false).text('UPDATE');
                     $('#nms-loader-overlay').removeClass('active');
 
                     if (xhr.status === 422 && xhr.responseJSON.errors) {
+                        let firstError = '';
                         $.each(xhr.responseJSON.errors, function(key, val) {
                             $('#' + key + '_error').html(val[0]);
                             $('#' + key).addClass('is-invalid');
+                            if (!firstError) firstError = val[0];
                         });
+
+                        // Show top alert notification for duplicate or validation errors
+                        if (typeof showAlert === 'function') {
+                            showAlert('danger', firstError || 'Please fix the validation errors below.');
+                        }
+
                         $('html, body').animate({
                             scrollTop: $('.is-invalid').first().offset().top - 100
                         }, 300);
                     } else {
-                        alert(xhr.responseJSON?.message || 'Error updating user account.');
+                        let errorMsg = xhr.responseJSON?.message || 'Error updating user account.';
+                        if (typeof showAlert === 'function') {
+                            showAlert('danger', errorMsg);
+                        } else {
+                            alert(errorMsg);
+                        }
                     }
                 }
             });

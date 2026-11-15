@@ -15,7 +15,7 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $data['title']    = 'SuperAdmin - My Profile';
+        $data['title']   = 'SuperAdmin - My Profile';
         $data['userInfo'] = User::with('company')->findOrFail(Auth::id());
         return view('superadmin.profile', $data);
     }
@@ -25,6 +25,10 @@ class ProfileController extends Controller
         $request->validate([
             'password'         => 'required|string|min:6',
             'confirm_password' => 'required|same:password',
+        ], [
+            'password.required'         => 'New password is required.',
+            'confirm_password.required' => 'Please confirm your new password.',
+            'confirm_password.same'     => 'The confirmation password does not match.',
         ]);
 
         try {
@@ -49,14 +53,19 @@ class ProfileController extends Controller
         $userId = Auth::id();
         $user   = User::findOrFail($userId);
 
-        $request->merge([
-            'phone' => preg_replace('/\D/', '', $request->phone)
-        ]);
+        // Format phone number before validation
+        if ($request->filled('phone')) {
+            $cleanPhone = preg_replace('/\D/', '', $request->phone);
+            if (strlen($cleanPhone) >= 10) {
+                $formattedPhone = substr($cleanPhone, 0, 3) . '-' . substr($cleanPhone, 3, 3) . '-' . substr($cleanPhone, 6, 4);
+                $request->merge(['phone' => $formattedPhone]);
+            }
+        }
 
         $request->validate([
             'first_name'    => 'required|string|max:100',
             'last_name'     => 'required|string|max:100',
-            'phone'         => 'required|digits:10|unique:users,phone,' . $userId,
+            'phone'         => 'required|string|max:20|unique:users,phone,' . $userId,
             'email'         => 'required|email|max:255|unique:users,email,' . $userId,
             'employee_code' => 'nullable|string|max:30',
             'designation'   => 'nullable|string|max:100',
@@ -64,6 +73,11 @@ class ProfileController extends Controller
             'dob'           => 'nullable|date',
             'gender'        => 'nullable|in:1,2,3',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ], [
+            'email.required' => 'Email address is required.',
+            'email.unique'   => 'This email address is already registered by another account.',
+            'phone.required' => 'Contact number is required.',
+            'phone.unique'   => 'This contact number is already registered by another account.',
         ]);
 
         try {

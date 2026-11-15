@@ -7,10 +7,9 @@
             <div class="card-soft p-4 bg-white shadow-sm position-relative">
                 <form id="addUserForm" enctype="multipart/form-data" novalidate>
                     @csrf
-
-                    <!-- 1. Personal Information Section -->
+                    <!-- 1. Account Information Section -->
                     <div class="section-title mt-0 mb-3 fw-bold text-dark" style="font-size: 15px;">
-                        <i class="bi bi-person-fill text-primary me-1"></i> 1. Account Information
+                        <i class="bi bi-person-fill text-primary me-1"></i> Account Information
                     </div>
 
                     <div class="row g-4 mb-4">
@@ -37,8 +36,8 @@
                         </div>
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" id="phone" name="phone" maxlength="12" placeholder=" ">
-                                <label class="form-label-joint">Contact Number</label>
+                                <input type="text" class="form-control" id="phone" name="phone" maxlength="12" placeholder=" " required>
+                                <label class="form-label-joint">Contact Number*</label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="phone_error"></small>
                         </div>
@@ -132,7 +131,11 @@
         // Clear error on input change
         $('input, select').on('input change', function() {
             $(this).removeClass('is-invalid');
-            $('#' + $(this).attr('name') + '_error').html('');
+            let nameAttr = $(this).attr('name');
+            if (nameAttr) {
+                let cleanName = nameAttr.replace('[]', '');
+                $('#' + cleanName + '_error').html('');
+            }
             $('#modules_error').html('');
         });
 
@@ -157,6 +160,11 @@
             if (!$('#email').val().trim()) {
                 $('#email_error').text('Email is required.');
                 $('#email').addClass('is-invalid');
+                isValid = false;
+            }
+            if (!$('#phone').val().trim()) {
+                $('#phone_error').text('Contact number is required.');
+                $('#phone').addClass('is-invalid');
                 isValid = false;
             }
             if (!$('#password').val() || $('#password').val().length < 6) {
@@ -190,27 +198,49 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    if (typeof showAlert === 'function') {
-                        showAlert('success', response.message);
+                    $('#nms-loader-overlay').removeClass('active');
+                    if (response.status === 'success') {
+                        if (typeof showAlert === 'function') {
+                            showAlert('success', response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                        setTimeout(() => {
+                            window.location.href = "{{ route('um.users.index') }}";
+                        }, 1000);
+                    } else {
+                        btn.prop('disabled', false).text('SAVE');
+                        if (typeof showAlert === 'function') {
+                            showAlert('danger', response.message || 'Something went wrong.');
+                        }
                     }
-                    setTimeout(() => {
-                        window.location.href = "{{ route('um.users.index') }}";
-                    }, 1000);
                 },
                 error: function(xhr) {
                     btn.prop('disabled', false).text('SAVE');
                     $('#nms-loader-overlay').removeClass('active');
 
                     if (xhr.status === 422 && xhr.responseJSON.errors) {
+                        let firstError = '';
                         $.each(xhr.responseJSON.errors, function(key, val) {
                             $('#' + key + '_error').html(val[0]);
                             $('#' + key).addClass('is-invalid');
+                            if (!firstError) firstError = val[0];
                         });
+
+                        if (typeof showAlert === 'function') {
+                            showAlert('danger', firstError || 'Please fix the validation errors below.');
+                        }
+
                         $('html, body').animate({
                             scrollTop: $('.is-invalid').first().offset().top - 100
                         }, 300);
                     } else {
-                        alert(xhr.responseJSON?.message || 'Error creating user account.');
+                        let errorMsg = xhr.responseJSON?.message || 'Error creating user account.';
+                        if (typeof showAlert === 'function') {
+                            showAlert('danger', errorMsg);
+                        } else {
+                            alert(errorMsg);
+                        }
                     }
                 }
             });

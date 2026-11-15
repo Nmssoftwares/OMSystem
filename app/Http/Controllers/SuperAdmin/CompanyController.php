@@ -105,7 +105,14 @@ class CompanyController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $request->merge(['phone' => preg_replace('/\D/', '', $request->phone)]);
+        // Format phone number before validation
+        if ($request->filled('phone')) {
+            $cleanPhone = preg_replace('/\D/', '', $request->phone);
+            if (strlen($cleanPhone) >= 10) {
+                $formattedPhone = substr($cleanPhone, 0, 3) . '-' . substr($cleanPhone, 3, 3) . '-' . substr($cleanPhone, 6, 4);
+                $request->merge(['phone' => $formattedPhone]);
+            }
+        }
 
         $request->validate([
             'company_name'    => 'required|string|max:255',
@@ -123,10 +130,13 @@ class CompanyController extends Controller
             'first_name'      => 'required|string|max:100',
             'last_name'       => 'required|string|max:100',
             'email'           => 'required|email|max:255|unique:users,email',
-            'phone'           => 'required|digits:10|unique:users,phone',
+            'phone'           => 'required|string|max:20|unique:users,phone',
             'password'        => 'required|string|min:6',
             'modules'         => 'required|array|min:1',
             'modules.*'       => 'integer|exists:modules,id',
+        ], [
+            'email.unique'    => 'This email address is already registered.',
+            'phone.unique'    => 'This contact number is already registered.',
         ]);
 
         $logoPath = null;
@@ -214,7 +224,14 @@ class CompanyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Admin user record not found.'], 404);
         }
 
-        $request->merge(['phone' => preg_replace('/\D/', '', $request->phone)]);
+        // Format phone number before validation
+        if ($request->filled('phone')) {
+            $cleanPhone = preg_replace('/\D/', '', $request->phone);
+            if (strlen($cleanPhone) >= 10) {
+                $formattedPhone = substr($cleanPhone, 0, 3) . '-' . substr($cleanPhone, 3, 3) . '-' . substr($cleanPhone, 6, 4);
+                $request->merge(['phone' => $formattedPhone]);
+            }
+        }
 
         $request->validate([
             'company_name'    => 'required|string|max:255',
@@ -233,7 +250,10 @@ class CompanyController extends Controller
             'first_name'      => 'required|string|max:100',
             'last_name'       => 'required|string|max:100',
             'email'           => 'required|email|max:255|unique:users,email,' . $user->id,
-            'phone'           => 'required|digits:10|unique:users,phone,' . $user->id,
+            'phone'           => 'required|string|max:20|unique:users,phone,' . $user->id,
+        ], [
+            'email.unique'    => 'This email address is already registered.',
+            'phone.unique'    => 'This contact number is already registered.',
         ]);
 
         DB::beginTransaction();

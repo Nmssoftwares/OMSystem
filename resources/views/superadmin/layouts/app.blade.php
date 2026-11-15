@@ -62,17 +62,9 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-
+   
    <!-- Sidebar Toggle Script -->
-   <script>
-      $(document).ready(function() {
-         $('.toggle-sidebar-btn').on('click', function(e) {
-            e.preventDefault();
-            $('body').toggleClass('toggle-sidebar');
-         });
-      });
-   </script>
-
+   <script src="{{ asset('assets/js/custom.js') }}?v=1"></script>
    @yield('scripts')
 </body>
 
