@@ -96,6 +96,28 @@
                role: "{{ $role ?? 3 }}"
             }
          },
+         dom: 'Bfrtip',
+         buttons: [{
+            extend: 'excel',
+            text: 'Excel',
+            className: 'buttons-excel dt-button',
+            exportOptions: {
+               columns: [0, 1, 2, 3],
+               format: {
+                  body: function(data, row, column, node) {
+                     return data ? data.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim() : '';
+                  }
+               }
+            }
+         }, {
+            text: 'PDF',
+            className: 'buttons-pdf dt-button',
+            action: function(e, dt, node, config) {
+               let role = "{{ $role ?? 3 }}";
+               let url = "{{ route('um.users.export.pdf') }}?role=" + role;
+               window.location.href = url;
+            }
+         }],
          columns: [{
                data: 'user_details',
                name: 'first_name'

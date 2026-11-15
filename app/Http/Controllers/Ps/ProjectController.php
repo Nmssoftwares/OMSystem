@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Ps;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\Company;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -65,5 +68,25 @@ class ProjectController extends Controller
             })
             ->rawColumns(['project_info', 'owner_info', 'timeline', 'status_badge', 'share_action', 'action'])
             ->make(true);
+    }
+
+    /**
+     * Export Projects to PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $companyId = auth()->user()->company_id;
+        $projects = Project::where('company_id', $companyId)->get();
+
+        $company = Company::find($companyId);
+
+        $data = [
+            'projects'     => $projects,
+            'company_name' => $company ? $company->company_name : 'OMSystem Portal',
+            'company_logo' => $company ? $company->company_logo : 'assets/img/main-logo.png'
+        ];
+
+        $pdf = Pdf::loadView('ps.pdf.projects_list', $data);
+        return $pdf->download('Projects_List_' . date('Ymd_His') . '.pdf');
     }
 }

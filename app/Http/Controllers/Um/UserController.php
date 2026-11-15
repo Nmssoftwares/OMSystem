@@ -11,6 +11,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Company;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -312,5 +315,28 @@ class UserController extends Controller
          'status'  => 'success',
          'message' => 'Modules permissions updated successfully.',
       ]);
+   }
+
+   public function exportPdf(Request $request)
+   {
+      $role = $request->get('role', 3);
+      $companyId = auth()->user()->company_id;
+
+      $users = User::with('company')
+         ->where('company_id', $companyId)
+         ->where('role', $role)
+         ->get();
+
+      $company = Company::find($companyId);
+
+      $data = [
+         'users'        => $users,
+         'role_title'   => $role == 2 ? 'Admins Directory' : 'Users Directory',
+         'company_name' => $company ? $company->company_name : 'OMSystem Portal',
+         'company_logo' => $company ? $company->company_logo : 'assets/img/main-logo.png'
+      ];
+
+      $pdf = Pdf::loadView('um.pdf.users_list', $data);
+      return $pdf->download(($role == 2 ? 'Admins_List_' : 'Users_List_') . date('Ymd_His') . '.pdf');
    }
 }

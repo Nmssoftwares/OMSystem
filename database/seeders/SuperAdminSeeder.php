@@ -16,7 +16,7 @@ class SuperAdminSeeder extends Seeder
    {
       // Create Company
       $company = Company::create([
-         'company_name' => 'HomeZen',
+         'company_name' => 'OMSystem',
          'company_address' => 'Sama Savli Road, Vadodara, Gujarat, India',
          'status' => 1,
       ]);

@@ -5,15 +5,6 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card-soft p-4 bg-white shadow-sm" style="border-radius: 12px;">
-
-                <!-- Top Action Bar (Optional if you want add button) -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-buildings text-primary me-2"></i>Projects Directory</h5>
-                    <a href="#" class="btn btn-primary btn-sm px-3 shadow-sm" style="border-radius: 8px; font-weight: 600;">
-                        <i class="bi bi-plus-lg me-1"></i> Add Project
-                    </a>
-                </div>
-
                 <div class="table-responsive">
                     <table class="table table-hover align-middle w-100" id="projectsTable">
                         <thead>
@@ -50,18 +41,27 @@
             ajax: {
                 url: "{{ route('ps.projects.datatable') }}",
             },
-            dom: '<"row mb-3"<"col-md-6"B><"col-md-6"f>>rt<"row mt-3"<"col-md-6"i><"col-md-6"p>>',
+            dom: 'Bfrtip',
             buttons: [{
-                    extend: 'excelHtml5',
-                    className: 'btn btn-outline-success btn-sm',
-                    text: '<i class="bi bi-file-earmark-excel me-1"></i> Excel'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    className: 'btn btn-outline-danger btn-sm',
-                    text: '<i class="bi bi-file-earmark-pdf me-1"></i> PDF'
+                extend: 'excel',
+                text: 'Excel',
+                className: 'buttons-excel dt-button',
+                exportOptions: {
+                    columns: [0, 1, 2, 3],
+                    format: {
+                        body: function(data, row, column, node) {
+                            return data ? data.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim() : '';
+                        }
+                    }
                 }
-            ],
+            }, {
+                text: 'PDF',
+                className: 'buttons-pdf dt-button',
+                action: function(e, dt, node, config) {
+                    let role = "{{ $role ?? 3 }}";
+                    window.location.href = "{{ route('ps.projects.export.pdf') }}";
+                }
+            }],
             columns: [{
                     data: null,
                     orderable: false,

@@ -76,20 +76,17 @@ class ModuleController extends Controller
     {
         $modulesQuery = Module::query();
 
-        // Agar user ne dropdown se koi group select kiya hai toh filter lagayenge
         if ($request->filled('group_name')) {
             $modulesQuery->where('group_name', $request->group_name);
         }
 
         $modules = $modulesQuery->orderBy('group_order', 'asc')->get();
 
-        // Logged-in admin ki company fetch karein (Dynamic Logo & Name ke liye)
         $company = null;
         if (Auth::check() && Auth::user()->company_id) {
             $company = Company::find(Auth::user()->company_id);
         }
 
-        // Data set karein (Agar company nahi milti toh default value use hogi)
         $data = [
             'modules'      => $modules,
             'company_name' => $company ? $company->company_name : 'SuperAdmin Portal',
