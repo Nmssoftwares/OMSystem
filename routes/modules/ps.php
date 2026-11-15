@@ -3,9 +3,20 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Ps\DashboardController as PsDashboardController;
 use App\Http\Controllers\Ps\ProjectController;
+use App\Http\Controllers\Ps\ProjectTypeController;
 
 Route::controller(PsDashboardController::class)->group(function () {
     Route::get('/dashboard', 'index')->name('dashboard');
+});
+
+Route::prefix('project-types')->name('project-types.')->controller(ProjectTypeController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('datatable', 'datatable')->name('datatable');
+    Route::post('store', 'store')->name('store');
+    Route::put('update/{id}', 'update')->name('update');
+    Route::post('update-status', 'updateStatus')->name('update-status');
+    Route::delete('delete/{id}', 'destroy')->name('destroy');
+    Route::get('export/pdf', 'exportPdf')->name('export.pdf');
 });
 
 Route::prefix('projects')->name('projects.')->controller(ProjectController::class)->group(function () {
