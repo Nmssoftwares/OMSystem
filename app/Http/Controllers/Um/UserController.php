@@ -70,7 +70,7 @@ class UserController extends Controller
          })
          ->addColumn('status_badge', function ($row) {
             $checked = (int) $row->status === 1 ? 'checked' : '';
-            return '<div class="form-check form-switch align-items-center mb-0 ms-1">
+            return '<div class="form-check form-switch d-flex justify-content-center align-items-center mb-0">
                <input class="form-check-input status-toggle" type="checkbox" data-id="' . $row->id . '" ' . $checked . ' style="cursor:pointer; width:38px; height:20px;">
             </div>';
          })
@@ -102,7 +102,6 @@ class UserController extends Controller
 
       // Sirf wahi modules fetch honge jo is company ko assigned hain
       $assignedModuleIds = AssignModule::where('company_id', $companyId)->pluck('module_id');
-
       $data['groupedModules'] = Module::whereIn('id', $assignedModuleIds)
          ->where('status', 1)
          ->orderBy('group_order')
@@ -160,21 +159,35 @@ class UserController extends Controller
    }
 
    /**
-    * Show Edit Form
+    * Show Edit Form with Assigned Modules
     */
    public function edit($id)
    {
       $companyId = auth()->user()->company_id;
-      $data['title'] = 'UM - Edit User/Admin';
+      $data['title'] = 'UM - Edit User / Admin';
+
+      // Sirf logged-in company ka user fetch hoga
       $data['user'] = User::where('company_id', $companyId)->findOrFail($id);
+
+      // Company ko assigned modules fetch karein
+      $assignedModuleIds = AssignModule::where('company_id', $companyId)->pluck('module_id');
+
+      $data['groupedModules'] = Module::whereIn('id', $assignedModuleIds)
+         ->where('status', 1)
+         ->orderBy('group_order')
+         ->get()
+         ->groupBy('group_name');
+
+      // User ke paas already kaunse modules assigned hain unki IDs
+      $data['userModules'] = UserModule::where('user_id', $id)->pluck('module_id')->toArray();
 
       return view('um.edit_user', $data);
    }
 
    /**
-    * Update User/Admin
+    * Update User/Admin & Modules
     */
-   public function update(Request $request, $id)
+   public function update(Request $request, $id): JsonResponse
    {
       $companyId = auth()->user()->company_id;
       $user = User::where('company_id', $companyId)->findOrFail($id);
@@ -183,22 +196,44 @@ class UserController extends Controller
          'first_name' => 'required|string|max:255',
          'email'      => 'required|email|unique:users,email,' . $id,
          'role'       => 'required|in:2,3',
+         'modules'    => 'required|array|min:1',
+         'modules.*'  => 'exists:modules,id',
+      ], [
+         'modules.required' => 'Please select at least one module.',
       ]);
 
-      $user->first_name = $request->first_name;
-      $user->last_name = $request->last_name;
-      $user->name = $request->first_name . ' ' . $request->last_name;
-      $user->email = $request->email;
-      if ($request->filled('password')) {
-         $user->password = Hash::make($request->password);
+      try {
+         $user->first_name = $request->first_name;
+         $user->last_name = $request->last_name;
+         $user->email = $request->email;
+         if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+         }
+         $user->role = $request->role;
+         $user->contact_no = $request->phone;
+         $user->gender = $request->gender;
+         $user->save();
+
+         // Sync User Modules
+         UserModule::where('user_id', $user->id)->delete();
+         foreach ($request->modules as $moduleId) {
+            UserModule::create([
+               'company_id' => $companyId,
+               'user_id'    => $user->id,
+               'module_id'  => $moduleId,
+            ]);
+         }
+
+         return response()->json([
+            'status'  => 'success',
+            'message' => 'User and module permissions updated successfully.',
+         ]);
+      } catch (\Throwable $e) {
+         return response()->json([
+            'status'  => 'error',
+            'message' => 'Failed to update user: ' . $e->getMessage()
+         ], 500);
       }
-      $user->role = $request->role;
-      $user->contact_no = $request->phone;
-      $user->save();
-
-      $redirectRoute = $user->role == 2 ? 'um.admins.index' : 'um.users.index';
-
-      return redirect()->route($redirectRoute)->with('success', 'User updated successfully.');
    }
 
    /**

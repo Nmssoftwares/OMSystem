@@ -7,6 +7,12 @@
             <div class="card-soft p-4 bg-white shadow-sm position-relative">
                 <form id="addUserForm" enctype="multipart/form-data" novalidate>
                     @csrf
+
+                    <!-- 1. Personal Information Section -->
+                    <div class="section-title mt-0 mb-3 fw-bold text-dark" style="font-size: 15px;">
+                        <i class="bi bi-person-fill text-primary me-1"></i> 1. Account Information
+                    </div>
+
                     <div class="row g-4 mb-4">
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
@@ -66,6 +72,39 @@
                             <small class="text-danger error mt-1 d-block" id="password_error"></small>
                         </div>
                     </div>
+
+                    <!-- 2. Assign Modules Section (Company-wise) -->
+                    @if(isset($groupedModules) && $groupedModules->isNotEmpty())
+                    <div class="section-title mt-4 mb-3 fw-bold text-dark" style="font-size: 15px;">
+                        <i class="bi bi-grid-3x3-gap-fill text-primary me-1"></i> 2. Assign Modules
+                    </div>
+
+                    <div class="row g-4 mb-3">
+                        @foreach($groupedModules as $groupName => $modulesList)
+                        <div class="col-md-4">
+                            <div class="card border shadow-none h-100" style="border-radius: 8px; background: #fafbfe;">
+                                <div class="card-header bg-light py-2 px-3 fw-bold small text-dark border-bottom">
+                                    {{ $loop->iteration }}. {{ $groupName }}
+                                </div>
+                                <div class="card-body p-3 d-flex flex-column gap-2">
+                                    @foreach($modulesList as $module)
+                                    <div class="p-2 border rounded d-flex align-items-center justify-content-between bg-white mb-1">
+                                        <label class="form-check-label small fw-medium text-dark mb-0" for="gridCheck{{ $module->id }}" style="cursor: pointer;">
+                                            <i class="{{ $module->icon ?: 'bi bi-app' }} text-primary me-1"></i> {{ $module->name }}
+                                        </label>
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input module-checkbox" type="checkbox" id="gridCheck{{ $module->id }}" value="{{ $module->id }}" name="modules[]" checked>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="col-12 mb-3"><small class="text-danger error" id="modules_error"></small></div>
+                    @endif
+
                     <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                         <button type="button" class="btn btn-danger px-4 py-2" id="clearBtn" style="border-radius:6px; font-weight:600; font-size:13px;">CLEAR</button>
                         <button type="submit" class="btn px-5 py-2" id="saveBtn" style="background-color: #334e68; color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 13px;">SAVE</button>
@@ -94,6 +133,7 @@
         $('input, select').on('input change', function() {
             $(this).removeClass('is-invalid');
             $('#' + $(this).attr('name') + '_error').html('');
+            $('#modules_error').html('');
         });
 
         // Form Submit via AJAX
@@ -122,6 +162,10 @@
             if (!$('#password').val() || $('#password').val().length < 6) {
                 $('#password_error').text('Password must be at least 6 characters.');
                 $('#password').addClass('is-invalid');
+                isValid = false;
+            }
+            if ($('.module-checkbox').length > 0 && $('.module-checkbox:checked').length === 0) {
+                $('#modules_error').text('Please select at least one module.');
                 isValid = false;
             }
 

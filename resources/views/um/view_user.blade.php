@@ -24,7 +24,7 @@
 </section>
 
 <!-- Floating Bottom-Right Add Button -->
-<a href="{{ route('um.users.create') }}" title="Add New Account" class="floating-action-btn floating-btn-add">
+<a href="{{ route('um.users.create', ['role' => $role ?? 3]) }}" title="Add New Account" class="floating-action-btn floating-btn-add">
    <i class="bi bi-plus-lg"></i>
 </a>
 @endsection
