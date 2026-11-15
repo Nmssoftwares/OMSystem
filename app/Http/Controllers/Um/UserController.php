@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Um;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Module;
+use App\Models\AssignModule;
+use App\Models\UserModule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,36 +15,39 @@ use Yajra\DataTables\Facades\DataTables;
 class UserController extends Controller
 {
    /**
-    * 1. Family Members List (Role = 3)
+    * 1. Users List (Role = 3) - Company Wise
     */
    public function index(Request $request)
    {
-      $data['title'] = 'UM - Family Members Management';
+      $data['title'] = 'UM - Users Management';
       $data['role'] = 3;
 
       return view('um.view_user', $data);
    }
 
    /**
-    * 2. House Admins List (Role = 2)
+    * 2. Admins List (Role = 2) - Company Wise
     */
    public function admin(Request $request)
    {
-      $data['title'] = 'UM - House Admins Management';
+      $data['title'] = 'UM - Admins Management';
       $data['role'] = 2;
 
       return view('um.view_user', $data);
    }
 
    /**
-    * Unified Datatable for both roles (Company-wise relation included)
+    * Unified Datatable for both roles (Filtered by Logged-in Company)
     */
    public function datatable(Request $request)
    {
       $role = $request->get('role', 3);
+      $companyId = auth()->user()->company_id;
 
-      // Company relation ke sath data fetch kar rahe hain
-      $users = User::with('company')->where('role', $role);
+      // Sirf logged-in user ki company ke users fetch honge
+      $users = User::with('company')
+         ->where('company_id', $companyId)
+         ->where('role', $role);
 
       return DataTables::of($users)
          ->addColumn('user_details', function ($row) {
@@ -92,11 +98,22 @@ class UserController extends Controller
       $data['title'] = 'UM - Add New User / Admin';
       $data['role'] = $request->get('role', 3);
 
+      $companyId = auth()->user()->company_id;
+
+      // Sirf wahi modules fetch honge jo is company ko assigned hain
+      $assignedModuleIds = AssignModule::where('company_id', $companyId)->pluck('module_id');
+
+      $data['groupedModules'] = Module::whereIn('id', $assignedModuleIds)
+         ->where('status', 1)
+         ->orderBy('group_order')
+         ->get()
+         ->groupBy('group_name');
+
       return view('um.add_user', $data);
    }
 
    /**
-    * Store New User/Admin
+    * Store New User/Admin & Assign Modules
     */
    public function store(Request $request): JsonResponse
    {
@@ -105,23 +122,40 @@ class UserController extends Controller
          'email'      => 'required|email|unique:users,email',
          'password'   => 'required|min:6',
          'role'       => 'required|in:2,3',
+         'modules'    => 'required|array|min:1',
+         'modules.*'  => 'exists:modules,id',
+      ], [
+         'modules.required' => 'Please select at least one module.',
       ]);
 
-      User::create([
+      $companyId = auth()->user()->company_id;
+
+      $user = User::create([
          'first_name' => $request->first_name,
          'last_name'  => $request->last_name,
          'name'       => $request->first_name . ' ' . $request->last_name,
          'email'      => $request->email,
          'password'   => Hash::make($request->password),
-         'company_id' => auth()->user()->company_id ?? 1, // Automatically logged-in admin's company
+         'company_id' => $companyId,
          'role'       => $request->role,
          'contact_no' => $request->phone,
          'status'     => 1,
       ]);
 
+      // Assign modules to user_modules table
+      if ($request->has('modules')) {
+         foreach ($request->modules as $moduleId) {
+            UserModule::create([
+               'company_id' => $companyId,
+               'user_id'    => $user->id,
+               'module_id'  => $moduleId,
+            ]);
+         }
+      }
+
       return response()->json([
          'status'  => 'success',
-         'message' => 'Account created successfully.',
+         'message' => 'Account and modules assigned successfully.',
       ]);
    }
 
@@ -130,8 +164,9 @@ class UserController extends Controller
     */
    public function edit($id)
    {
+      $companyId = auth()->user()->company_id;
       $data['title'] = 'UM - Edit User/Admin';
-      $data['user'] = User::findOrFail($id);
+      $data['user'] = User::where('company_id', $companyId)->findOrFail($id);
 
       return view('um.edit_user', $data);
    }
@@ -141,7 +176,8 @@ class UserController extends Controller
     */
    public function update(Request $request, $id)
    {
-      $user = User::findOrFail($id);
+      $companyId = auth()->user()->company_id;
+      $user = User::where('company_id', $companyId)->findOrFail($id);
 
       $request->validate([
          'first_name' => 'required|string|max:255',
@@ -166,7 +202,7 @@ class UserController extends Controller
    }
 
    /**
-    * Update Status AJAX
+    * Update Status AJAX (Company Restricted)
     */
    public function updateStatus(Request $request): JsonResponse
    {
@@ -175,7 +211,8 @@ class UserController extends Controller
          'status' => 'required|in:0,1',
       ]);
 
-      $user = User::findOrFail($request->id);
+      $companyId = auth()->user()->company_id;
+      $user = User::where('company_id', $companyId)->findOrFail($request->id);
       $user->status = (int) $request->status;
       $user->save();
 

@@ -9,14 +9,14 @@
                @csrf
                <input type="hidden" name="_method" value="PUT">
 
-               <!-- 1. Household Information -->
-               <div class="section-title mt-0">1. Household Information</div>
+               <!-- 1. Company Information -->
+               <div class="section-title mt-0">1. Company Information</div>
 
                <div class="row g-4">
                   <div class="col-md-5">
                      <div class="input-floating-wrap">
                         <input type="text" class="form-control" id="company_name" name="company_name" placeholder=" " value="{{ old('company_name', $company->company_name) }}" required>
-                        <label class="form-label-joint">Household Name*</label>
+                        <label class="form-label-joint">Company Name*</label>
                      </div>
                      <small class="text-danger error mt-1 d-block" id="company_name_error"></small>
                   </div>
@@ -73,7 +73,7 @@
                </div>
 
                <!-- 2. Administrator Profile -->
-               <div class="section-title">2. House Head / Admin Profile</div>
+               <div class="section-title">2. Company Admin Profile</div>
 
                <div class="row g-4">
                   <div class="col-md-4">
@@ -110,7 +110,7 @@
                </div>
 
                <!-- Form Actions inside card -->
-               <div class="d-flex justify-content-between align-items-center mt-2 pt-3">
+               <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                   <button type="button" class="btn btn-danger px-4 py-2" id="closeBtn" style="border-radius: 6px; font-weight: 600; font-size: 13px;">CANCEL</button>
                   <button type="submit" class="btn px-5 py-2" id="updateBtn" style="background-color: #334e68; color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 13px;">UPDATE</button>
                </div>
@@ -120,8 +120,8 @@
    </div>
 </section>
 
-<!-- Floating Bottom-Right View Button[cite: 6] -->
-<a href="{{ route('superadmin.companies.index') }}" title="View Households" class="floating-action-btn">
+<!-- Floating Bottom-Right View Button -->
+<a href="{{ route('superadmin.companies.index') }}" title="View Companies" class="floating-action-btn floating-btn-view">
    <i class="bi bi-eye-fill"></i>
 </a>
 @endsection
@@ -154,7 +154,7 @@
          $('.form-control').removeClass('is-invalid');
 
          if (!$('#company_name').val().trim()) {
-            $('#company_name_error').text('Name is required.');
+            $('#company_name_error').text('Company name is required.');
             $('#company_name').addClass('is-invalid');
             isValid = false;
          }
@@ -219,7 +219,7 @@
                      scrollTop: $('.is-invalid').first().offset().top - 100
                   }, 300);
                } else {
-                  alert(xhr.responseJSON?.message || 'Error updating household.');
+                  alert(xhr.responseJSON?.message || 'Error updating company.');
                }
             }
          });

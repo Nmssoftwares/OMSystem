@@ -58,7 +58,6 @@
 
    .erp-group-header {
       background: #334e68 !important;
-      /* Dark Slate Theme Color */
       color: #ffffff !important;
       padding: 14px 20px;
       display: flex;
@@ -71,7 +70,6 @@
 
    .erp-group-header:hover {
       background: #243b53 !important;
-      /* Slightly darker shade on hover */
    }
 
    .erp-header-left {
@@ -167,11 +165,11 @@
 <div class="sa-metrics-grid mb-4">
    <div class="sa-metric-card">
       <div class="sa-metric-icon" style="background:#e0f2fe; color:#0284c7;">
-         <i class="bi bi-houses"></i>
+         <i class="bi bi-buildings"></i>
       </div>
       <div>
          <div class="sa-metric-val">{{ $totalCompanies }}</div>
-         <div class="sa-metric-lbl">Total Households</div>
+         <div class="sa-metric-lbl">Total Companies</div>
       </div>
    </div>
 
@@ -181,7 +179,7 @@
       </div>
       <div>
          <div class="sa-metric-val">{{ $totalAdmins }}</div>
-         <div class="sa-metric-lbl">House Admins</div>
+         <div class="sa-metric-lbl">Company Admins</div>
       </div>
    </div>
 
@@ -191,7 +189,7 @@
       </div>
       <div>
          <div class="sa-metric-val">{{ $totalUsers ?? 0 }}</div>
-         <div class="sa-metric-lbl">Family Members</div>
+         <div class="sa-metric-lbl">Total Users</div>
       </div>
    </div>
 
@@ -258,7 +256,7 @@ $groupMeta = [
                         <i class="{{ $module->icon ?: 'bi bi-box' }}"></i>
                      </div>
                      <div class="erp-tile-text">
-                        <span class="erp-tile-label">{{ $name = $module->name }}</span>
+                        <span class="erp-tile-label">{{ $module->name }}</span>
                         <span class="erp-tile-code font-monospace">{{ $module->short_name }}</span>
                      </div>
                   </a>

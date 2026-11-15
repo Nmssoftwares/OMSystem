@@ -7,7 +7,7 @@
    <script>
       (function() {
          try {
-            var t = localStorage.getItem('homezen-theme') || 'light';
+            var t = localStorage.getItem('omsystem-theme') || 'light';
             document.documentElement.setAttribute('data-theme', t);
             document.documentElement.setAttribute('data-bs-theme', t);
          } catch (e) {}
@@ -17,7 +17,7 @@
    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
    <meta http-equiv="Pragma" content="no-cache">
    <meta http-equiv="Expires" content="0">
-   <title>{{ $title ?? 'Dashboard' }} - HomeZen</title>
+   <title>{{ $title ?? 'Dashboard' }} - OMSystem</title>
 
    <!-- Bootstrap 5 CSS CDN -->
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">

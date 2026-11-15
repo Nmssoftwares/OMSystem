@@ -15,7 +15,7 @@
                 <span>Add User/Admin</span>
             </a>
         </li>
-        
+
         <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('um.admins*') ? '' : 'collapsed' }}" href="{{ route('um.admins.index') }}">
                 <i class="bi bi-person-badge-fill"></i>

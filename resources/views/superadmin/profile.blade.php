@@ -182,16 +182,7 @@
 @endsection
 
 @section('content')
-<!-- Standalone Hidden File Input for Auto-Upload -->
 <input type="file" id="profile_image_input" class="d-none" accept="image/png, image/jpeg, image/jpg, image/webp">
-
-<div class="pagetitle d-flex justify-content-between align-items-center mb-3">
-   <div>
-      <h1 class="mb-0 fw-bold text-dark">Super Admin Profile</h1>
-      <div class="text-muted small mt-1">Manage your account credentials, employment details, and security settings.</div>
-   </div>
-</div>
-
 <section class="section profile">
    <div class="row g-4">
       <!-- LEFT HERO PROFILE CARD -->
@@ -228,7 +219,7 @@
                <div class="profile-meta-grid">
                   <div class="profile-meta-item">
                      <div class="meta-lbl">System</div>
-                     <div class="meta-val" title="HomeZen">HomeZen</div>
+                     <div class="meta-val" title="OMSystem">OMSystem</div>
                   </div>
                   <div class="profile-meta-item">
                      <div class="meta-lbl">Department</div>

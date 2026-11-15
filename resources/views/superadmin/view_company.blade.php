@@ -9,7 +9,7 @@
                <table class="table table-hover align-middle w-100" id="companiesTable">
                   <thead>
                      <tr>
-                        <th>Household Details</th>
+                        <th>Company Details</th>
                         <th>Admin Name</th>
                         <th>Admin Email</th>
                         <th class="text-center">Admin Phone</th>
@@ -78,7 +78,7 @@
                </div>
                <div>
                   <h5 class="modal-title fw-bold text-dark mb-0">Manage Subscribed Modules</h5>
-                  <small class="text-muted">Configure active groups and features for this household.</small>
+                  <small class="text-muted">Configure active groups and features for this company.</small>
                </div>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -103,8 +103,8 @@
    </div>
 </div>
 
-<a href="{{ route('superadmin.companies.create') }}" title="View Households" class="floating-action-btn">
-   <i class="bi bi-plus"></i>
+<a href="{{ route('superadmin.companies.create') }}" title="Add New Company" class="floating-action-btn floating-btn-add">
+   <i class="bi bi-plus-lg"></i>
 </a>
 @endsection
 

@@ -7,9 +7,6 @@ use App\Models\AssignModule;
 use App\Models\Company;
 use App\Models\Module;
 use App\Models\User;
-use App\Models\Role;
-use App\Models\Permission;
-use App\Services\TodoMasterDataService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +21,7 @@ class CompanyController extends Controller
 {
     public function index()
     {
-        $data['title'] = 'SuperAdmin - Households';
+        $data['title'] = 'SuperAdmin - Companies Management';
         return view('superadmin.view_company', $data);
     }
 
@@ -42,6 +39,8 @@ class CompanyController extends Controller
                     ? '<span class="badge bg-light text-primary border ms-1">' . e($row->company_code) . '</span>'
                     : '';
 
+                $gstInfo = $row->gst_number ? '<br><small class="text-muted">GST: ' . e($row->gst_number) . '</small>' : '';
+
                 $html = '<div class="d-flex align-items-center gap-2">';
                 if ($logo) {
                     $html .= '<img src="' . $logo . '" class="rounded shadow-sm" style="width:36px; height:36px; object-fit:cover;">';
@@ -51,7 +50,7 @@ class CompanyController extends Controller
 
                 $html .= '<div>
                     <div class="fw-bold text-dark">' . e($row->company_name) . $codeBadge . '</div>
-                    <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>' . e($row->company_address) . '</small>
+                    <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>' . e($row->company_address) . '</small>' . $gstInfo . '
                 </div></div>';
 
                 return $html;
@@ -64,7 +63,7 @@ class CompanyController extends Controller
                 $adminId = optional($row->users->first())->id;
 
                 $html = '<div class="d-flex justify-content-center gap-1">';
-                $html .= '<a href="' . route('superadmin.companies.edit', $row->id) . '" class="btn btn-sm btn-outline-primary rounded-circle" title="Edit Household"><i class="bi bi-pencil"></i></a>';
+                $html .= '<a href="' . route('superadmin.companies.edit', $row->id) . '" class="btn btn-sm btn-outline-primary rounded-circle" title="Edit Company"><i class="bi bi-pencil"></i></a>';
 
                 if ($adminId) {
                     $html .= ' <button type="button" class="btn btn-sm btn-outline-success rounded-circle changePasswordBtn" data-userid="' . $adminId . '" data-bs-toggle="modal" data-bs-target="#changePasswordModal" title="Reset Admin Password"><i class="bi bi-key"></i></button>';
@@ -85,17 +84,17 @@ class CompanyController extends Controller
 
         $data = [
             'companies'    => $companies,
-            'company_name' => $currentCompany ? $currentCompany->company_name : 'HomeZen SuperAdmin',
+            'company_name' => $currentCompany ? $currentCompany->company_name : 'OMSystem SuperAdmin',
             'company_logo' => $currentCompany ? $currentCompany->company_logo : 'assets/img/main-logo.png'
         ];
 
         return Pdf::loadView('superadmin.pdf.companies_list', $data)
-            ->download('Households_List_' . date('Ymd_His') . '.pdf');
+            ->download('Companies_List_' . date('Ymd_His') . '.pdf');
     }
 
     public function create()
     {
-        $data['title'] = 'SuperAdmin - Add Household';
+        $data['title'] = 'SuperAdmin - Add Company';
         $data['groupedModules'] = Module::where('status', 1)
             ->orderBy('group_order', 'asc')
             ->get()
@@ -104,7 +103,7 @@ class CompanyController extends Controller
         return view('superadmin.add_company', $data);
     }
 
-    public function store(Request $request, TodoMasterDataService $todoMasterDataService): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $request->merge(['phone' => preg_replace('/\D/', '', $request->phone)]);
 
@@ -112,6 +111,8 @@ class CompanyController extends Controller
             'company_name'    => 'required|string|max:255',
             'company_code'    => 'nullable|string|max:10',
             'company_address' => 'required|string|max:500',
+            'gst_number'      => 'nullable|string|max:20',
+            'pan_number'      => 'nullable|string|max:20',
             'company_email'   => 'nullable|email|max:255|unique:companies,company_email',
             'company_phone'   => 'nullable|string|max:20|unique:companies,company_phone',
             'company_website' => 'nullable|url|max:255',
@@ -147,6 +148,8 @@ class CompanyController extends Controller
                 'company_name'    => $request->company_name,
                 'company_code'    => $request->company_code ? strtoupper($request->company_code) : null,
                 'company_address' => $request->company_address,
+                'gst_number'      => $request->gst_number ? strtoupper($request->gst_number) : null,
+                'pan_number'      => $request->pan_number ? strtoupper($request->pan_number) : null,
                 'company_logo'    => $logoPath,
                 'company_email'   => $request->company_email,
                 'company_phone'   => $request->company_phone,
@@ -160,7 +163,7 @@ class CompanyController extends Controller
                 'first_name'    => $request->first_name,
                 'last_name'     => $request->last_name,
                 'employee_code' => $request->employee_code,
-                'designation'   => $request->designation ?: 'House Admin',
+                'designation'   => $request->designation ?: 'Company Admin',
                 'department'    => $request->department ?: 'Management',
                 'dob'           => $request->dob,
                 'joining_date'  => $request->joining_date ?: now()->format('Y-m-d'),
@@ -180,25 +183,22 @@ class CompanyController extends Controller
                 ]);
             }
 
-            self::generateDefaultCompanyRoles($company->id, $request->modules);
-            $todoMasterDataService->createForCompany($company->id);
-
             DB::commit();
 
-            return response()->json(['status' => 'success', 'message' => 'Household and admin account created successfully.']);
+            return response()->json(['status' => 'success', 'message' => 'Company and admin account created successfully.']);
         } catch (\Throwable $e) {
             DB::rollBack();
             if ($logoPath && File::exists(public_path($logoPath))) {
                 File::delete(public_path($logoPath));
             }
             Log::error('Company Store Error: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Failed to create household.', 'error' => $e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => 'Failed to create company.', 'error' => $e->getMessage()], 500);
         }
     }
 
     public function edit(int $id)
     {
-        $data['title']   = 'SuperAdmin - Edit Household';
+        $data['title']   = 'SuperAdmin - Edit Company';
         $data['company'] = Company::findOrFail($id);
         $data['user']    = User::where(['company_id' => $id, 'role' => 2])->first();
 
@@ -220,6 +220,8 @@ class CompanyController extends Controller
             'company_name'    => 'required|string|max:255',
             'company_code'    => 'nullable|string|max:10',
             'company_address' => 'required|string|max:500',
+            'gst_number'      => 'nullable|string|max:20',
+            'pan_number'      => 'nullable|string|max:20',
             'company_email'   => 'nullable|email|max:255|unique:companies,company_email,' . $id,
             'company_phone'   => 'nullable|string|max:20|unique:companies,company_phone,' . $id,
             'company_website' => 'nullable|url|max:255',
@@ -252,6 +254,8 @@ class CompanyController extends Controller
                 'company_name'    => $request->company_name,
                 'company_code'    => $request->company_code ? strtoupper($request->company_code) : null,
                 'company_address' => $request->company_address,
+                'gst_number'      => $request->gst_number ? strtoupper($request->gst_number) : null,
+                'pan_number'      => $request->pan_number ? strtoupper($request->pan_number) : null,
                 'company_logo'    => $logoPath,
                 'company_email'   => $request->company_email,
                 'company_phone'   => $request->company_phone,
@@ -276,11 +280,11 @@ class CompanyController extends Controller
             ]);
 
             DB::commit();
-            return response()->json(['status' => 'success', 'message' => 'Household profile updated successfully.']);
+            return response()->json(['status' => 'success', 'message' => 'Company profile updated successfully.']);
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Company Update Error: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Failed to update household.'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Failed to update company.'], 500);
         }
     }
 
@@ -331,51 +335,8 @@ class CompanyController extends Controller
             foreach ($modules as $moduleId) {
                 AssignModule::create(['company_id' => $companyId, 'module_id' => $moduleId]);
             }
-
-            if ($companyId == 1) {
-                Role::where('company_id', $companyId)->delete();
-                self::generateDefaultCompanyRoles($companyId, $modules);
-            }
         });
 
-        return response()->json(['status' => 'success', 'message' => 'Household modules updated successfully.']);
-    }
-
-    private static function generateDefaultCompanyRoles(int $companyId, array $moduleIds)
-    {
-        $modules = Module::whereIn('id', $moduleIds)->where('status', 1)->get();
-        if ($modules->isEmpty()) return;
-
-        $shortNames = $modules->pluck('short_name')->filter()->toArray();
-        if (empty($shortNames)) return;
-
-        $viewPermIds    = Permission::whereIn('module_short_name', $shortNames)->where('name', 'LIKE', '%.view')->pluck('id')->toArray();
-        $addEditPermIds = Permission::whereIn('module_short_name', $shortNames)->where('name', 'LIKE', '%.add_edit')->pluck('id')->toArray();
-        $deletePermIds  = Permission::whereIn('module_short_name', $shortNames)->where('name', 'LIKE', '%.delete')->pluck('id')->toArray();
-        $exportPermIds  = Permission::whereIn('module_short_name', $shortNames)->where('name', 'LIKE', '%.export')->pluck('id')->toArray();
-        $adminPermIds   = Permission::whereIn('module_short_name', $shortNames)->where('name', 'LIKE', '%.admin_access')->pluck('id')->toArray();
-
-        if (!empty($viewPermIds)) {
-            Role::firstOrCreate(['company_id' => $companyId, 'name' => 'Viewer'], ['description' => 'Read-only access.'])
-                ->permissions()->syncWithoutDetaching($viewPermIds);
-        }
-
-        $contributorIds = array_merge($viewPermIds, $addEditPermIds);
-        if (!empty($contributorIds)) {
-            Role::firstOrCreate(['company_id' => $companyId, 'name' => 'Contributor'], ['description' => 'Can view, create, and update records.'])
-                ->permissions()->syncWithoutDetaching($contributorIds);
-        }
-
-        $managerIds = array_merge($viewPermIds, $addEditPermIds, $deletePermIds, $exportPermIds);
-        if (!empty($managerIds)) {
-            Role::firstOrCreate(['company_id' => $companyId, 'name' => 'Manager'], ['description' => 'Full operational access.'])
-                ->permissions()->syncWithoutDetaching($managerIds);
-        }
-
-        $adminAllIds = array_merge($viewPermIds, $addEditPermIds, $deletePermIds, $exportPermIds, $adminPermIds);
-        if (!empty($adminAllIds)) {
-            Role::firstOrCreate(['company_id' => $companyId, 'name' => 'Administrator'], ['description' => 'Complete administrative privileges.'])
-                ->permissions()->syncWithoutDetaching($adminAllIds);
-        }
+        return response()->json(['status' => 'success', 'message' => 'Company modules updated successfully.']);
     }
 }

@@ -47,118 +47,6 @@
       color: #6c757d;
    }
 
-   /* ERP Group Box & Launcher Grid */
-   .erp-group-box {
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 4px 20px rgba(1, 41, 112, 0.05);
-      border: 1px solid #eef2f7;
-      overflow: hidden;
-      margin-bottom: 20px;
-   }
-
-   .erp-group-header {
-      background: #334e68 !important; /* Dark Slate Theme Color */
-      color: #ffffff !important;
-      padding: 14px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.2s ease;
-   }
-
-   .erp-group-header:hover {
-      background: #243b53 !important;
-   }
-
-   .erp-header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      color: #ffffff !important;
-      font-size: 15px;
-   }
-
-   .erp-header-left i {
-      font-size: 18px;
-      color: #ffffff !important;
-   }
-
-   .erp-header-badge {
-      background: rgba(255, 255, 255, 0.2);
-      color: #ffffff !important;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-weight: 600;
-   }
-
-   .erp-header-chevron {
-      color: #ffffff !important;
-      transition: transform 0.3s ease;
-   }
-
-   .erp-group-header.collapsed .erp-header-chevron {
-      transform: rotate(180deg);
-   }
-
-   .erp-group-body {
-      padding: 16px;
-      background: #fff;
-   }
-
-   .erp-launcher-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 14px;
-   }
-
-   .erp-module-tile {
-      background: #fdfdfe;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      position: relative;
-      min-height: 110px;
-   }
-
-   .erp-module-tile:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(44, 111, 155, 0.12);
-      border-color: #2c6f9b;
-      background: #fff;
-   }
-
-   .erp-icon-wrapper {
-      font-size: 32px;
-      color: #2c6f9b;
-      margin-bottom: 8px;
-   }
-
-   .erp-tile-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1e293b;
-      display: block;
-      line-height: 1.3;
-   }
-
-   .erp-tile-code {
-      font-size: 10px;
-      color: #94a3b8;
-      margin-top: 2px;
-   }
-
    .card-soft {
       background: #fff;
       border-radius: 14px;
@@ -169,14 +57,7 @@
 @endsection
 
 @section('content')
-<div class="pagetitle d-flex justify-content-between align-items-center mb-3">
-   <div>
-      <h4 class="fw-bold text-dark mb-1">{{ $greeting }}, {{ $userName }}!</h4>
-      <p class="text-muted small mb-0">User Management & Access Control Analytics Dashboard.</p>
-   </div>
-</div>
-
-<!-- TOP METRIC CARDS (Sirf Admins & Users) -->
+<!-- TOP METRIC CARDS -->
 <div class="sa-metrics-grid mb-4">
    <div class="sa-metric-card">
       <div class="sa-metric-icon" style="background:#dcfce7; color:#16a34a;">
@@ -184,7 +65,7 @@
       </div>
       <div>
          <div class="sa-metric-val">{{ $totalAdmins }}</div>
-         <div class="sa-metric-lbl">Total House Admins</div>
+         <div class="sa-metric-lbl">Company Admins</div>
       </div>
    </div>
 
@@ -194,7 +75,7 @@
       </div>
       <div>
          <div class="sa-metric-val">{{ $totalUsers }}</div>
-         <div class="sa-metric-lbl">Total Family Members / Users</div>
+         <div class="sa-metric-lbl">Total Users</div>
       </div>
    </div>
 
@@ -234,27 +115,23 @@
 @endsection
 
 @section('scripts')
-<!-- Chart.js CDN (if not already included in layout) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
    document.addEventListener('DOMContentLoaded', function() {
-      // Tooltips init
-      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      tooltipTriggerList.map(function(tooltipTriggerEl) {
-         return new bootstrap.Tooltip(tooltipTriggerEl, {
-            delay: { show: 150, hide: 50 },
-            boundary: document.body
-         });
-      });
+      // Safe Blade to JS Variable Binding
+      const totalAdmins = Number("{{ $totalAdmins ?? 0 }}");
+      const totalUsers = Number("{{ $totalUsers ?? 0 }}");
+      const activeUsersCount = Number("{{ $activeUsersCount ?? 0 }}");
+      const inactiveUsersCount = Number("{{ $inactiveUsersCount ?? 0 }}");
 
       // 1. Role Distribution Donut Chart
       const ctxRole = document.getElementById('roleDistributionChart').getContext('2d');
       new Chart(ctxRole, {
          type: 'doughnut',
          data: {
-            labels: ['House Admins', 'Family Members / Users'],
+            labels: ['Company Admins', 'Users'],
             datasets: [{
-               data: [{{ $totalAdmins }}, {{ $totalUsers }}],
+               data: [totalAdmins, totalUsers],
                backgroundColor: ['#16a34a', '#0284c7'],
                borderWidth: 2,
                borderColor: '#ffffff'
@@ -266,7 +143,13 @@
             plugins: {
                legend: {
                   position: 'bottom',
-                  labels: { font: { size: 12, family: 'inherit' }, boxWidth: 15 }
+                  labels: {
+                     font: {
+                        size: 12,
+                        family: 'inherit'
+                     },
+                     boxWidth: 15
+                  }
                }
             }
          }
@@ -280,7 +163,7 @@
             labels: ['Active Accounts', 'Inactive Accounts'],
             datasets: [{
                label: 'Users Count',
-               data: [{{ $activeUsersCount }}, {{ $inactiveUsersCount }}],
+               data: [activeUsersCount, inactiveUsersCount],
                backgroundColor: ['#334e68', '#94a3b8'],
                borderRadius: 6,
             }]
@@ -289,15 +172,21 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-               legend: { display: false }
+               legend: {
+                  display: false
+               }
             },
             scales: {
                y: {
                   beginAtZero: true,
-                  ticks: { precision: 0 }
+                  ticks: {
+                     precision: 0
+                  }
                },
                x: {
-                  grid: { display: false }
+                  grid: {
+                     display: false
+                  }
                }
             }
          }

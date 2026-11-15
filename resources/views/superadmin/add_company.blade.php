@@ -8,14 +8,14 @@
             <form id="addForm" enctype="multipart/form-data" novalidate>
                @csrf
 
-               <!-- Form Grid Inputs -->
-               <div class="section-title mt-0">1. Household Information</div>
+               <!-- 1. Company Information -->
+               <div class="section-title mt-0">1. Company Information</div>
 
                <div class="row g-4">
                   <div class="col-md-4">
                      <div class="input-floating-wrap">
                         <input type="text" class="form-control" id="company_name" name="company_name" placeholder=" " required>
-                        <label class="form-label-joint">Household Name*</label>
+                        <label class="form-label-joint">Company Name*</label>
                      </div>
                      <small class="text-danger error mt-1 d-block" id="company_name_error"></small>
                   </div>
@@ -31,7 +31,7 @@
                   <div class="col-md-4">
                      <div class="input-floating-wrap">
                         <input type="file" class="form-control" id="company_logo" name="company_logo" accept="image/*">
-                        <label class="form-label-joint">Household Logo</label>
+                        <label class="form-label-joint">Company Logo</label>
                      </div>
                      <small class="text-danger error mt-1 d-block" id="company_logo_error"></small>
                   </div>
@@ -61,8 +61,8 @@
                   </div>
                </div>
 
-                  <!-- 2. Administrator Profile -->
-               <div class="section-title">2. House Head / Admin Profile</div>
+               <!-- 2. Administrator Profile -->
+               <div class="section-title">2. Company Admin Profile</div>
                <div class="row g-4">
                   <div class="col-md-4">
                      <div class="input-floating-wrap">
@@ -83,7 +83,7 @@
                   <div class="col-md-4">
                      <div class="input-floating-wrap">
                         <input type="email" class="form-control" id="email" name="email" placeholder=" " required>
-                        <label class="form-label-joint">Email Id (Login Id)*</label>
+                        <label class="form-label-joint">Email ID (Login ID)*</label>
                      </div>
                      <small class="text-danger error mt-1 d-block" id="email_error"></small>
                   </div>
@@ -142,8 +142,8 @@
                @endif
 
                <!-- Form Actions (Clear & Save) inside card -->
-               <div class="d-flex justify-content-between align-items-center mt-2 pt-3">
-                  <button type="button" class="btn btn-danger px-4 py-2" id="closeBtn">CLEAR</button>
+               <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                  <button type="button" class="btn btn-danger px-4 py-2" id="closeBtn" style="border-radius:6px; font-weight:600; font-size:13px;">CLEAR</button>
                   <button type="submit" class="btn px-5 py-2" id="saveBtn" style="background-color: #334e68; color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 13px;">SAVE</button>
                </div>
             </form>
@@ -152,8 +152,8 @@
    </div>
 </section>
 
-<!-- Floating Bottom-Right View Button (Reference Image style)[cite: 6] -->
-<a href="{{ route('superadmin.companies.index') }}" title="View Households" class="floating-action-btn">
+<!-- Floating Bottom-Right View Button -->
+<a href="{{ route('superadmin.companies.index') }}" title="View Companies" class="floating-action-btn floating-btn-view">
    <i class="bi bi-eye-fill"></i>
 </a>
 @endsection
@@ -183,7 +183,7 @@
          $('.form-control').removeClass('is-invalid');
 
          if (!$('#company_name').val().trim()) {
-            $('#company_name_error').text('Household name is required.');
+            $('#company_name_error').text('Company name is required.');
             $('#company_name').addClass('is-invalid');
             isValid = false;
          }
@@ -257,7 +257,7 @@
                      scrollTop: $('.is-invalid').first().offset().top - 100
                   }, 300);
                } else {
-                  alert(xhr.responseJSON?.message || 'Error creating household.');
+                  alert(xhr.responseJSON?.message || 'Error creating company.');
                }
             }
          });

@@ -2,8 +2,8 @@
     <!-- Left: Logo & Sidebar Toggle Button -->
     <div class="d-flex align-items-center gap-3">
         <a href="{{ auth()->user()->role == 1 ? route('superadmin.dashboard') : route('user.dashboard') }}" class="logo d-flex align-items-center text-decoration-none">
-            <i class="bi bi-house-heart-fill fs-3 text-white me-2"></i>
-            <span class="fs-4 fw-bold text-white tracking-wide">HomeZen</span>
+            <i class="bi bi-shield-lock-fill fs-3 text-white me-2"></i>
+            <span class="fs-4 fw-bold text-white tracking-wide">OMSystem</span>
         </a>
 
         <!-- Back Arrow / Toggle Sidebar Button -->

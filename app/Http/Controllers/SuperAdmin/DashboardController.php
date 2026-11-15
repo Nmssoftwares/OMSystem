@@ -32,7 +32,7 @@ class DashboardController extends Controller
          ->get()
          ->groupBy(fn($item) => $item->group_name ?: 'General Operations');
 
-      // 4. Recently Onboarded Households/Companies (Latest 5)
+      // 4. Recently Onboarded Companies (Latest 5)
       $recentCompanies = Company::with(['users' => fn($q) => $q->where('role', 2)])
          ->latest()
          ->take(5)

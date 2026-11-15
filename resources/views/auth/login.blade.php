@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
 	<meta name="csrf-token" content="{{ csrf_token() }}">
-	<title>Sign In - HomeZen</title>
+	<title>Sign In - OMSystem</title>
 	<link rel="icon" type="image/x-icon" href="/favicon.ico">
 
 	<!-- Bootstrap 5 CSS CDN -->
@@ -110,14 +110,6 @@
 
 	<div class="login-content">
 		<div class="login-card">
-			<div class="login-card-header">
-				<div class="logo-circle">
-					<i class="bi bi-house-heart-fill fs-3 text-primary"></i>
-				</div>
-				<h4 class="mt-3 fw-bold text-white mb-0">HomeZen</h4>
-				<p class="small text-white-50 mb-0">Household Management System</p>
-			</div>
-
 			<div class="login-card-body">
 				<div class="mb-4 text-center">
 					<h5 class="fw-bold text-dark mb-1">Welcome Back</h5>
@@ -133,7 +125,7 @@
 							<span class="input-group-text bg-light border-end-0 text-muted" style="border-radius: 10px 0 0 10px;">
 								<i class="bi bi-person"></i>
 							</span>
-							<input type="text" name="login_identifier" id="login_identifier" class="form-control border-start-0 ps-0" placeholder="name@homezen.com or 9876543210" required>
+							<input type="text" name="login_identifier" id="login_identifier" class="form-control border-start-0 ps-0" placeholder="name@omsystem.com or 9876543210" required>
 						</div>
 						<span class="text-danger small mt-1 d-block" id="login_identifier_error"></span>
 					</div>
@@ -169,7 +161,7 @@
 				</form>
 
 				<div class="text-center mt-4">
-					<small class="text-muted">© {{ date('Y') }} HomeZen. All rights reserved.</small>
+					<small class="text-muted">© {{ date('Y') }} OMSystem. All rights reserved.</small>
 				</div>
 			</div>
 		</div>

@@ -12,17 +12,18 @@ class DashboardController extends Controller
    public function index()
    {
       $user = Auth::user();
+      $companyId = $user->company_id;
 
       // 1. Greeting calculation (IST timezone)
       $hour = now('Asia/Kolkata')->hour;
       $greeting = $hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening');
       $userName = $user->name ?? trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
 
-      // 2. UM Specific Metric Counters (Sirf Admins & Users)
-      $totalAdmins       = User::where('role', 2)->count();
-      $totalUsers        = User::where('role', 3)->count();
-      $activeUsersCount  = User::where('status', 1)->count();
-      $inactiveUsersCount = User::where('status', 0)->count();
+      // 2. UM Specific Metric Counters (Filtered by Company ID)
+      $totalAdmins        = User::where('company_id', $companyId)->where('role', 2)->count();
+      $totalUsers         = User::where('company_id', $companyId)->where('role', 3)->count();
+      $activeUsersCount   = User::where('company_id', $companyId)->where('status', 1)->count();
+      $inactiveUsersCount = User::where('company_id', $companyId)->where('status', 0)->count();
 
       // 3. Modules Grouped for UM Workspace
       $groupedModules = Module::where('group_name', 'LIKE', '%Access%')
