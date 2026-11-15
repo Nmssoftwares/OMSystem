@@ -11,7 +11,7 @@
 
         <!-- Projects Listing (Jo screenshot me thi) -->
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('ps.projects.index') ? '' : 'collapsed' }}" href="#">
+            <a class="nav-link {{ request()->routeIs('ps.projects.index') ? '' : 'collapsed' }}" href="{{ route('ps.projects.index') }}">
                 <i class="bi bi-buildings-fill"></i>
                 <span>Projects</span>
             </a>

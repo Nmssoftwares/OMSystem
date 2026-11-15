@@ -1,8 +1,8 @@
 <header id="header" class="header fixed-top d-flex align-items-center justify-content-between px-3 px-md-4" style="background: #334e68 !important; height: 60px; z-index: 997;">
     <!-- Left: Logo & Sidebar Toggle Button -->
     <div class="d-flex align-items-center gap-3">
-        <a href="{{ route('ps.dashboard') }}" class="logo d-flex align-items-center text-decoration-none">
-            <i class="bi bi-buildings-fill fs-3 text-white me-2"></i>
+        <a href="{{ auth()->user()->role == 1 ? route('superadmin.dashboard') : route('user.dashboard') }}" class="logo d-flex align-items-center text-decoration-none">
+            <i class="bi bi-shield-lock-fill fs-3 text-white me-2"></i>
             <span class="fs-4 fw-bold text-white tracking-wide">OMSystem</span>
         </a>
 

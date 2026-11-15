@@ -1,196 +1,108 @@
-@extends('um.layouts.app')
-
-@section('styles')
-<style>
-   /* App Launcher Grid & Tile Custom Styling */
-   .sa-metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-   }
-
-   .sa-metric-card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 4px 20px rgba(1, 41, 112, 0.05);
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      border: 1px solid #eef2f7;
-      transition: transform 0.2s ease;
-   }
-
-   .sa-metric-card:hover {
-      transform: translateY(-2px);
-   }
-
-   .sa-metric-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-   }
-
-   .sa-metric-val {
-      font-size: 24px;
-      font-weight: 700;
-      color: #012970;
-      line-height: 1.2;
-   }
-
-   .sa-metric-lbl {
-      font-size: 13px;
-      color: #6c757d;
-   }
-
-   .card-soft {
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 4px 20px rgba(1, 41, 112, 0.05);
-      border: 1px solid #eef2f7;
-   }
-</style>
-@endsection
+@extends('ps.layouts.app')
 
 @section('content')
-<!-- TOP METRIC CARDS -->
-<div class="sa-metrics-grid mb-4">
-   <div class="sa-metric-card">
-      <div class="sa-metric-icon" style="background:#dcfce7; color:#16a34a;">
-         <i class="bi bi-person-badge-fill"></i>
+<section class="section">
+   <!-- Top Statistics Cards -->
+   <div class="row g-4 mb-4">
+      <!-- Total Projects -->
+      <div class="col-xxl-4 col-md-6">
+         <div class="card info-card sales-card shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card-body">
+               <h5 class="card-title text-muted small text-uppercase fw-bold">Total Projects</h5>
+               <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 48px; height: 48px; font-size: 20px;">
+                     <i class="bi bi-buildings-fill"></i>
+                  </div>
+                  <div class="ps-3">
+                     <h4 class="fw-bold text-dark mb-0">{{ $totalProjects }}</h4>
+                     <span class="text-success small pt-1 fw-semibold">All registered sites</span>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
-      <div>
-         <div class="sa-metric-val">{{ $totalAdmins }}</div>
-         <div class="sa-metric-lbl">Company Admins</div>
-      </div>
-   </div>
 
-   <div class="sa-metric-card">
-      <div class="sa-metric-icon" style="background:#e0f2fe; color:#0284c7;">
-         <i class="bi bi-people-fill"></i>
+      <!-- Active Projects -->
+      <div class="col-xxl-4 col-md-6">
+         <div class="card info-card revenue-card shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card-body">
+               <h5 class="card-title text-muted small text-uppercase fw-bold">Active Projects</h5>
+               <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-success-subtle text-success" style="width: 48px; height: 48px; font-size: 20px;">
+                     <i class="bi bi-check-circle-fill"></i>
+                  </div>
+                  <div class="ps-3">
+                     <h4 class="fw-bold text-dark mb-0">{{ $activeProjects }}</h4>
+                     <span class="text-muted small pt-1">Currently in progress</span>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
-      <div>
-         <div class="sa-metric-val">{{ $totalUsers }}</div>
-         <div class="sa-metric-lbl">Total Users</div>
-      </div>
-   </div>
 
-   <div class="sa-metric-card">
-      <div class="sa-metric-icon" style="background:#fef3c7; color:#d97706;">
-         <i class="bi bi-person-check-fill"></i>
-      </div>
-      <div>
-         <div class="sa-metric-val">{{ $activeUsersCount }}</div>
-         <div class="sa-metric-lbl">Active Accounts</div>
-      </div>
-   </div>
-</div>
-
-<!-- ANALYTICS CHARTS SECTION -->
-<div class="row g-4 mb-4">
-   <!-- Chart 1: Role Distribution Donut Chart -->
-   <div class="col-lg-6">
-      <div class="card-soft p-4 h-100">
-         <h5 class="card-title fs-6 fw-bold text-dark mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>User Role Breakdown</h5>
-         <div style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
-            <canvas id="roleDistributionChart"></canvas>
+      <!-- Inactive Projects -->
+      <div class="col-xxl-4 col-md-6">
+         <div class="card info-card customers-card shadow-sm border-0" style="border-radius: 12px;">
+            <div class="card-body">
+               <h5 class="card-title text-muted small text-uppercase fw-bold">Inactive / Completed</h5>
+               <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-danger-subtle text-danger" style="width: 48px; height: 48px; font-size: 20px;">
+                     <i class="bi bi-archive-fill"></i>
+                  </div>
+                  <div class="ps-3">
+                     <h4 class="fw-bold text-dark mb-0">{{ $inactiveProjects }}</h4>
+                     <span class="text-danger small pt-1">Closed or on hold</span>
+                  </div>
+               </div>
+            </div>
          </div>
       </div>
    </div>
 
-   <!-- Chart 2: Account Status Bar Chart -->
-   <div class="col-lg-6">
-      <div class="card-soft p-4 h-100">
-         <h5 class="card-title fs-6 fw-bold text-dark mb-3"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Account Status Overview</h5>
-         <div style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
-            <canvas id="statusOverviewChart"></canvas>
+   <!-- Recent Projects Table Preview -->
+   <div class="row">
+      <div class="col-12">
+         <div class="card shadow-sm border-0 p-4" style="border-radius: 12px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+               <h5 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history text-primary me-2"></i>Recent Projects Overview</h5>
+               <a href="#" class="btn btn-sm btn-outline-primary" style="border-radius: 6px;">View All Projects</a>
+            </div>
+            <div class="table-responsive">
+               <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                     <tr>
+                        <th>Project Name</th>
+                        <th>Owner Name</th>
+                        <th>Type</th>
+                        <th>Start Date</th>
+                        <th>Status</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     @forelse($recentProjects as $project)
+                     <tr>
+                        <td class="fw-bold text-dark">{{ $project->project_name }} <span class="badge bg-light text-primary border ms-1">{{ $project->project_label }}</span></td>
+                        <td>{{ $project->owner_name ?: 'N/A' }}</td>
+                        <td>{{ $project->project_type ?: 'General' }}</td>
+                        <td>{{ $project->start_date ? \Carbon\Carbon::parse($project->start_date)->format('d-m-Y') : '-' }}</td>
+                        <td>
+                           @if($project->status == 1)
+                           <span class="badge bg-success">Active</span>
+                           @else
+                           <span class="badge bg-secondary">Inactive</span>
+                           @endif
+                        </td>
+                     </tr>
+                     @empty
+                     <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No projects found. Start by adding a new project!</td>
+                     </tr>
+                     @endforelse
+                  </tbody>
+               </table>
+            </div>
          </div>
       </div>
    </div>
-</div>
-@endsection
-
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-   document.addEventListener('DOMContentLoaded', function() {
-      // Safe Blade to JS Variable Binding
-      const totalAdmins = Number("{{ $totalAdmins ?? 0 }}");
-      const totalUsers = Number("{{ $totalUsers ?? 0 }}");
-      const activeUsersCount = Number("{{ $activeUsersCount ?? 0 }}");
-      const inactiveUsersCount = Number("{{ $inactiveUsersCount ?? 0 }}");
-
-      // 1. Role Distribution Donut Chart
-      const ctxRole = document.getElementById('roleDistributionChart').getContext('2d');
-      new Chart(ctxRole, {
-         type: 'doughnut',
-         data: {
-            labels: ['Company Admins', 'Users'],
-            datasets: [{
-               data: [totalAdmins, totalUsers],
-               backgroundColor: ['#16a34a', '#0284c7'],
-               borderWidth: 2,
-               borderColor: '#ffffff'
-            }]
-         },
-         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-               legend: {
-                  position: 'bottom',
-                  labels: {
-                     font: {
-                        size: 12,
-                        family: 'inherit'
-                     },
-                     boxWidth: 15
-                  }
-               }
-            }
-         }
-      });
-
-      // 2. Account Status Bar Chart
-      const ctxStatus = document.getElementById('statusOverviewChart').getContext('2d');
-      new Chart(ctxStatus, {
-         type: 'bar',
-         data: {
-            labels: ['Active Accounts', 'Inactive Accounts'],
-            datasets: [{
-               label: 'Users Count',
-               data: [activeUsersCount, inactiveUsersCount],
-               backgroundColor: ['#334e68', '#94a3b8'],
-               borderRadius: 6,
-            }]
-         },
-         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-               legend: {
-                  display: false
-               }
-            },
-            scales: {
-               y: {
-                  beginAtZero: true,
-                  ticks: {
-                     precision: 0
-                  }
-               },
-               x: {
-                  grid: {
-                     display: false
-                  }
-               }
-            }
-         }
-      });
-   });
-</script>
+</section>
 @endsection
