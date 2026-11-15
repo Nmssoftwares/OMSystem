@@ -29,16 +29,15 @@
                         <!-- Project Type -->
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
-                                <select name="project_type" id="project_type" class="form-select">
-                                    <option value="">Select Type</option>
-                                    <option value="Factory">Factory</option>
-                                    <option value="Commercial">Commercial</option>
-                                    <option value="Residential">Residential</option>
-                                    <option value="Infrastructure">Infrastructure</option>
+                                <select name="project_type_id" id="project_type_id" class="form-select">
+                                    <option value="">Select Project Type</option>
+                                    @foreach($projectTypes as $type)
+                                    <option value="{{ $type->id }}">{{ $type->type_name }}</option>
+                                    @endforeach
                                 </select>
                                 <label class="form-label-joint">Project Type</label>
                             </div>
-                            <small class="text-danger error mt-1 d-block" id="project_type_error"></small>
+                            <small class="text-danger error mt-1 d-block" id="project_type_id_error"></small>
                         </div>
 
                         <!-- Owner Name -->

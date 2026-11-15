@@ -41,16 +41,17 @@
                         <!-- Project Type -->
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
-                                <select name="project_type" id="project_type" class="form-select">
-                                    <option value="">Select Type</option>
-                                    <option value="Factory" {{ $project->project_type == 'Factory' ? 'selected' : '' }}>Factory</option>
-                                    <option value="Commercial" {{ $project->project_type == 'Commercial' ? 'selected' : '' }}>Commercial</option>
-                                    <option value="Residential" {{ $project->project_type == 'Residential' ? 'selected' : '' }}>Residential</option>
-                                    <option value="Infrastructure" {{ $project->project_type == 'Infrastructure' ? 'selected' : '' }}>Infrastructure</option>
+                                <select name="project_type_id" id="project_type_id" class="form-select">
+                                    <option value="">Select Project Type</option>
+                                    @foreach($projectTypes as $type)
+                                    <option value="{{ $type->id }}" {{ $project->project_type_id == $type->id ? 'selected' : '' }}>
+                                        {{ $type->type_name }}
+                                    </option>
+                                    @endforeach
                                 </select>
                                 <label class="form-label-joint">Project Type</label>
                             </div>
-                            <small class="text-danger error mt-1 d-block" id="project_type_error"></small>
+                            <small class="text-danger error mt-1 d-block" id="project_type_id_error"></small>
                         </div>
 
                         <!-- Owner Name -->

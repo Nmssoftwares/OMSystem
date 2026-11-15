@@ -32,15 +32,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small">Project Type Name*</label>
-                        <input type="text" class="form-control" name="type_name" id="add_type_name" placeholder="e.g. Commercial, Warehouse" required>
-                        <small class="text-danger error mt-1 d-block" id="add_type_name_error"></small>
+                    <div class="input-floating-wrap mb-2">
+                        <input type="text" class="form-control" name="type_name" id="add_type_name" placeholder=" " required>
+                        <label class="form-label-joint">Project Type Name*</label>
                     </div>
+                    <small class="text-danger error mt-1 d-block" id="add_type_name_error"></small>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-sm px-4" id="saveTypeBtn">Save Type</button>
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal" style="border-radius: 6px; font-weight: 600;">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4" id="saveTypeBtn" style="border-radius: 6px; font-weight: 600;">Save Type</button>
                 </div>
             </form>
         </div>
@@ -60,15 +60,15 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small">Project Type Name*</label>
-                        <input type="text" class="form-control" name="type_name" id="edit_type_name" required>
-                        <small class="text-danger error mt-1 d-block" id="edit_type_name_error"></small>
+                    <div class="input-floating-wrap mb-2">
+                        <input type="text" class="form-control" name="type_name" id="edit_type_name" placeholder=" " required>
+                        <label class="form-label-joint">Project Type Name*</label>
                     </div>
+                    <small class="text-danger error mt-1 d-block" id="edit_type_name_error"></small>
                 </div>
                 <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-sm px-4" id="updateTypeBtn">Update Type</button>
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal" style="border-radius: 6px; font-weight: 600;">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4" id="updateTypeBtn" style="border-radius: 6px; font-weight: 600;">Update Type</button>
                 </div>
             </form>
         </div>

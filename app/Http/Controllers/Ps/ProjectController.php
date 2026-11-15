@@ -69,7 +69,13 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        $data['title'] = 'PS - Add New Project';
+        $companyId = auth()->user()->company_id;
+
+        $data['title']        = 'PS - Add New Project';
+        $data['projectTypes'] = \App\Models\ProjectType::where('company_id', $companyId)
+            ->where('status', 1)
+            ->orderBy('type_name', 'asc')
+            ->get();
         return view('ps.add_project', $data);
     }
 
@@ -83,13 +89,13 @@ class ProjectController extends Controller
             'project_label'   => 'nullable|string|max:50',
             'owner_name'      => 'nullable|string|max:255',
             'owner_label'     => 'nullable|string|max:50',
-            'project_type'    => 'nullable|string|max:100',
+            'project_type_id' => 'nullable|integer|exists:project_types,id',
             'project_address' => 'nullable|string|max:500',
             'start_date'      => 'nullable|date',
             'end_date'        => 'nullable|date|after_or_equal:start_date',
             'status'          => 'required|in:0,1',
         ], [
-            'project_name.required' => 'Project name is required.',
+            'project_name.required'   => 'Project name is required.',
             'end_date.after_or_equal' => 'End date must be a date after or equal to start date.',
         ]);
 
@@ -102,7 +108,7 @@ class ProjectController extends Controller
                 'project_label'   => $request->project_label ? strtoupper($request->project_label) : null,
                 'owner_name'      => $request->owner_name,
                 'owner_label'     => $request->owner_label,
-                'project_type'    => $request->project_type,
+                'project_type_id' => $request->project_type_id,
                 'project_address' => $request->project_address,
                 'start_date'      => $request->start_date,
                 'end_date'        => $request->end_date,
@@ -128,8 +134,12 @@ class ProjectController extends Controller
     {
         $companyId = auth()->user()->company_id;
 
-        $data['title']   = 'PS - Edit Project';
-        $data['project'] = Project::where('company_id', $companyId)->findOrFail($id);
+        $data['title']        = 'PS - Edit Project';
+        $data['project']      = Project::where('company_id', $companyId)->findOrFail($id);
+        $data['projectTypes'] = \App\Models\ProjectType::where('company_id', $companyId)
+            ->where('status', 1)
+            ->orderBy('type_name', 'asc')
+            ->get();
 
         return view('ps.edit_project', $data);
     }
@@ -147,7 +157,7 @@ class ProjectController extends Controller
             'project_label'   => 'nullable|string|max:50',
             'owner_name'      => 'nullable|string|max:255',
             'owner_label'     => 'nullable|string|max:50',
-            'project_type'    => 'nullable|string|max:100',
+            'project_type_id' => 'nullable|integer|exists:project_types,id',
             'project_address' => 'nullable|string|max:500',
             'start_date'      => 'nullable|date',
             'end_date'        => 'nullable|date|after_or_equal:start_date',
@@ -163,7 +173,7 @@ class ProjectController extends Controller
                 'project_label'   => $request->project_label ? strtoupper($request->project_label) : null,
                 'owner_name'      => $request->owner_name,
                 'owner_label'     => $request->owner_label,
-                'project_type'    => $request->project_type,
+                'project_type_id' => $request->project_type_id,
                 'project_address' => $request->project_address,
                 'start_date'      => $request->start_date,
                 'end_date'        => $request->end_date,
@@ -217,7 +227,7 @@ class ProjectController extends Controller
 
         $companyId = auth()->user()->company_id;
         $project = Project::where('company_id', $companyId)->findOrFail($request->id);
-        
+
         $project->status = (int)$request->status;
         $project->save();
 
