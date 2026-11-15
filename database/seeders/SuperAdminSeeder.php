@@ -30,7 +30,7 @@ class SuperAdminSeeder extends Seeder
          'company_id' => 1,
          'role'       => 1,
          'status'     => 1,
-         'phone'      => '9999999999',
+         'phone'      => '999-999-9999',
       ]);
 
       // Create Admin
@@ -42,7 +42,7 @@ class SuperAdminSeeder extends Seeder
          'company_id' => 1,
          'role'       => 2,
          'status'     => 1,
-         'phone'      => '8888888888',
+         'phone'      => '888-888-8888',
       ]);
 
       // Create User
@@ -54,7 +54,7 @@ class SuperAdminSeeder extends Seeder
          'company_id' => 1,
          'role'       => 3,
          'status'     => 1,
-         'phone'      => '7777777777',
+         'phone'      => '777-777-7777',
       ]);
    }
 }
