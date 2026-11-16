@@ -41,10 +41,10 @@
 <body>
 
    <!-- Header -->
-   @include('ps.layouts.header')
+   @include('pc.layouts.header')
 
    <!-- Sidebar -->
-   @include('ps.layouts.sidebar')
+   @include('pc.layouts.sidebar')
 
    <!-- Main Content -->
    <main id="main" class="main">

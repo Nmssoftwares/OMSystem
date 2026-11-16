@@ -24,6 +24,7 @@ Route::middleware([''])->group(function () {
 Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(base_path('routes/modules/superadmin.php'));
 Route::middleware(['auth'])->prefix('um')->name('um.')->group(base_path('routes/modules/um.php'));
 Route::middleware(['auth'])->prefix('ps')->name('ps.')->group(base_path('routes/modules/ps.php'));
+Route::middleware(['auth'])->prefix('pc')->name('pc.')->group(base_path('routes/modules/pc.php'));
 
 Route::get('/language/{lang}', function ($lang) {
    if (in_array($lang, ['en', 'hi', 'gu'])) {
