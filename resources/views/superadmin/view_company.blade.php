@@ -103,7 +103,7 @@
    </div>
 </div>
 
-<a href="{{ route('superadmin.companies.create') }}" title="Add New Company" class="floating-action-btn floating-btn-add">
+<a href="{{ route('superadmin.companies.create') }}" title="Add New Company" class="floating-action-btn">
    <i class="bi bi-plus-lg"></i>
 </a>
 @endsection
