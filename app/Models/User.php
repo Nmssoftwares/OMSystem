@@ -50,11 +50,13 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Relationship: A user belongs to a Company (Household).
-     */
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function bankDetail()
+    {
+        return $this->hasOne(UserBankDetail::class, 'user_id');
     }
 }

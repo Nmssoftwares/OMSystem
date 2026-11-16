@@ -29,5 +29,11 @@
                 <span>Users</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('um.user-banks.*') ? '' : 'collapsed' }}" href="{{ route('um.user-banks.index') }}">
+                <i class="bi bi-wallet2"></i>
+                <span>Bank & UPI Details</span>
+            </a>
+        </li>
     </ul>
 </aside>
