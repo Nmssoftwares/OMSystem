@@ -91,7 +91,6 @@
                <table class="table table-bordered table-striped align-small mb-0">
                   <thead>
                      <tr class="table-light">
-                        <th>#</th>
                         <th>Old Wage</th>
                         <th>New Wage</th>
                         <th>Changed By (Admin)</th>
@@ -339,7 +338,6 @@
                         let formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
 
                         rows += `<tr>
-                           <td>${i + 1}</td>
                            <td><span class="text-danger fw-semibold">₹ ${parseFloat(log.old_wage).toFixed(0)}</span></td>
                            <td><span class="text-success fw-semibold">₹ ${parseFloat(log.new_wage).toFixed(0)}</span></td>
                            <td>${adminName}</td>

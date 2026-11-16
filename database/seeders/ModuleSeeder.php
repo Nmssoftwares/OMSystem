@@ -37,6 +37,18 @@ class ModuleSeeder extends Seeder
                 'created_at'    => now(),
                 'updated_at'    => now(),
             ],
+            [
+                'name'          => 'Petty Cash',
+                'short_name'    => 'PC',
+                'group_name'    => 'Construction & Operations',
+                'group_order'   => 3,
+                'description'   => 'Manage daily site expenses, labour advances, and miscellaneous cash transactions.',
+                'icon'          => 'bi bi-wallet2',
+                'dashboard_url' => 'pc/dashboard',
+                'status'        => 1,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ],
         ]);
     }
 }
