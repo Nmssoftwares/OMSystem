@@ -184,11 +184,6 @@
                 $('#password').addClass('is-invalid');
                 isValid = false;
             }
-            if ($('.module-checkbox').length > 0 && $('.module-checkbox:checked').length === 0) {
-                $('#modules_error').text('Please select at least one module.');
-                isValid = false;
-            }
-
             if (!isValid) {
                 $('html, body').animate({
                     scrollTop: $('.is-invalid').first().offset().top - 100

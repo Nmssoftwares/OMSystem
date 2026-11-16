@@ -124,7 +124,6 @@ class UserController extends Controller
          'password'     => 'required|min:6',
          'role'         => 'required|in:2,3',
          'current_wage' => 'nullable|numeric|min:0',
-         'modules'      => 'required|array|min:1',
          'modules.*'    => 'exists:modules,id',
       ]);
 
@@ -203,20 +202,16 @@ class UserController extends Controller
          }
       }
 
+      // current_wage validation removed from here
       $request->validate([
-         'first_name'   => 'required|string|max:255',
-         'email'        => 'required|email|unique:users,email,' . $id,
-         'phone'        => 'required|string|max:20|unique:users,phone,' . $id,
-         'role'         => 'required|in:2,3',
-         'current_wage' => 'nullable|numeric|min:0',
-         'modules'      => 'required|array|min:1',
-         'modules.*'    => 'exists:modules,id',
+         'first_name' => 'required|string|max:255',
+         'email'      => 'required|email|unique:users,email,' . $id,
+         'phone'      => 'required|string|max:20|unique:users,phone,' . $id,
+         'role'       => 'required|in:2,3',
+         'modules.*'  => 'exists:modules,id',
       ]);
 
       try {
-         $oldWage = $user->current_wage ?? 0;
-         $newWage = $request->current_wage ?? 0;
-
          $user->first_name = $request->first_name;
          $user->last_name = $request->last_name;
          $user->email = $request->email;
@@ -226,18 +221,7 @@ class UserController extends Controller
          $user->role = $request->role;
          $user->phone = $request->phone;
          $user->gender = $request->gender;
-         $user->current_wage = $newWage;
-         $user->save();
-
-         if ((float)$oldWage !== (float)$newWage) {
-            UserWageLog::create([
-               'user_id'    => $user->id,
-               'company_id' => $companyId,
-               'old_wage'   => $oldWage,
-               'new_wage'   => $newWage,
-               'changed_by' => auth()->id(),
-            ]);
-         }
+         $user->save(); // current_wage update nahi hoga yahan
 
          UserModule::where('user_id', $user->id)->delete();
          foreach ($request->modules as $moduleId) {
@@ -250,7 +234,7 @@ class UserController extends Controller
 
          return response()->json([
             'status'  => 'success',
-            'message' => 'User details, wage and module permissions updated successfully.',
+            'message' => 'User details and module permissions updated successfully.',
          ]);
       } catch (\Throwable $e) {
          return response()->json([
