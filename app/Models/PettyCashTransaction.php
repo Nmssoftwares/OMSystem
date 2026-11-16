@@ -27,12 +27,6 @@ class PettyCashTransaction extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relationship with Admin who gave the cash
-    public function admin()
-    {
-        return $this->belongsTo(User::class, 'given_by');
-    }
-
     // Relationship with Company
     public function company()
     {

@@ -7,15 +7,9 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('pc.expenses.*') ? '' : 'collapsed' }}" href="#">
+            <a class="nav-link {{ request()->routeIs('pc.transactions.*') ? '' : 'collapsed' }}" href="{{ route('pc.transactions.index') }}">
                 <i class="bi bi-wallet2"></i>
-                <span>Expense & Kharcha</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('pc.advances.*') ? '' : 'collapsed' }}" href="#">
-                <i class="bi bi-cash-coin"></i>
-                <span>Labour Advance</span>
+                <span>Petty Cash / Kharcha</span>
             </a>
         </li>
     </ul>
