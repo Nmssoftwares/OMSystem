@@ -30,7 +30,7 @@
     <i class="bi bi-plus-lg"></i>
 </button>
 
-<!-- 1. ADD MODAL -->
+<!-- ADD MODAL -->
 <div class="modal fade" id="addBankModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
@@ -42,7 +42,7 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="row g-3">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="input-floating-wrap">
                                 <select name="user_id" id="add_user_id" class="form-select" required>
                                     <option value="">Select User</option>
@@ -60,52 +60,64 @@
                         </div>
                         <div class="col-md-6">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="account_holder_name" id="add_account_holder_name" placeholder=" " required>
-                                <label class="form-label-joint">Account Holder Name*</label>
+                                <select name="submission_type" id="add_submission_type" class="form-select submission-type-select" required>
+                                    <option value="both">Both (Bank & UPI)</option>
+                                    <option value="bank">Bank Details Only</option>
+                                    <option value="upi">UPI Details Only</option>
+                                </select>
+                                <label class="form-label-joint">Submission Type*</label>
+                            </div>
+                            <small class="text-danger error mt-1 d-block" id="add_submission_type_error"></small>
+                        </div>
+                        <div class="col-md-6 bank-field-wrap">
+                            <div class="input-floating-wrap">
+                                <input type="text" class="form-control bank-req" name="account_holder_name" id="add_account_holder_name" placeholder=" ">
+                                <label class="form-label-joint">Account Holder Name <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="add_account_holder_name_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="bank_name" id="add_bank_name" placeholder=" " required>
-                                <label class="form-label-joint">Bank Name* (e.g., HDFC, SBI)</label>
+                                <input type="text" class="form-control bank-req" name="bank_name" id="add_bank_name" placeholder=" ">
+                                <label class="form-label-joint">Bank Name <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="add_bank_name_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="account_number" id="add_account_number" placeholder=" " required>
-                                <label class="form-label-joint">Account Number*</label>
+                                <input type="text" class="form-control bank-req" name="account_number" id="add_account_number" placeholder=" ">
+                                <label class="form-label-joint">Account Number <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="add_account_number_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="ifsc_code" id="add_ifsc_code" placeholder=" " maxlength="11" required>
-                                <label class="form-label-joint">IFSC Code* (11 digits)</label>
+                                <input type="text" class="form-control bank-req" name="ifsc_code" id="add_ifsc_code" placeholder=" " maxlength="11">
+                                <label class="form-label-joint">IFSC Code <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="add_ifsc_code_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
                                 <input type="text" class="form-control" name="branch_name" id="add_branch_name" placeholder=" ">
                                 <label class="form-label-joint">Branch Name</label>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 upi-field-wrap">
                             <div class="input-floating-wrap">
                                 <input type="text" class="form-control" name="upi_number" id="add_upi_number" placeholder=" ">
                                 <label class="form-label-joint">UPI Number (Mobile)</label>
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 upi-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="upi_id" id="add_upi_id" placeholder=" ">
-                                <label class="form-label-joint">UPI ID (VPA, e.g. name@okhdfcbank)</label>
+                                <input type="text" class="form-control upi-req" name="upi_id" id="add_upi_id" placeholder=" ">
+                                <label class="form-label-joint">UPI ID (VPA) <span class="upi-star">*</span></label>
                             </div>
+                            <small class="text-danger error mt-1 d-block" id="add_upi_id_error"></small>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label text-muted small mb-1">Passbook / Cancelled Cheque (Image or PDF, Max 2MB)</label>
+                            <label class="form-label text-muted small mb-1">Passbook / Cancelled Cheque (Image or PDF)</label>
                             <input type="file" class="form-control" name="bank_proof" id="add_bank_proof" accept=".jpg,.jpeg,.png,.pdf">
                             <small class="text-danger error mt-1 d-block" id="add_bank_proof_error"></small>
                         </div>
@@ -120,7 +132,7 @@
     </div>
 </div>
 
-<!-- 2. EDIT MODAL -->
+<!-- EDIT MODAL (Similar Structure with prefix edit_) -->
 <div class="modal fade" id="editBankModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
@@ -134,7 +146,7 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="row g-3">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="input-floating-wrap">
                                 <select name="user_id" id="edit_user_id" class="form-select" required>
                                     <option value="">Select User</option>
@@ -152,49 +164,61 @@
                         </div>
                         <div class="col-md-6">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="account_holder_name" id="edit_account_holder_name" placeholder=" " required>
-                                <label class="form-label-joint">Account Holder Name*</label>
+                                <select name="submission_type" id="edit_submission_type" class="form-select submission-type-select" required>
+                                    <option value="both">Both (Bank & UPI)</option>
+                                    <option value="bank">Bank Details Only</option>
+                                    <option value="upi">UPI Details Only</option>
+                                </select>
+                                <label class="form-label-joint">Submission Type*</label>
+                            </div>
+                            <small class="text-danger error mt-1 d-block" id="edit_submission_type_error"></small>
+                        </div>
+                        <div class="col-md-6 bank-field-wrap">
+                            <div class="input-floating-wrap">
+                                <input type="text" class="form-control bank-req" name="account_holder_name" id="edit_account_holder_name" placeholder=" ">
+                                <label class="form-label-joint">Account Holder Name <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="edit_account_holder_name_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="bank_name" id="edit_bank_name" placeholder=" " required>
-                                <label class="form-label-joint">Bank Name*</label>
+                                <input type="text" class="form-control bank-req" name="bank_name" id="edit_bank_name" placeholder=" ">
+                                <label class="form-label-joint">Bank Name <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="edit_bank_name_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="account_number" id="edit_account_number" placeholder=" " required>
-                                <label class="form-label-joint">Account Number*</label>
+                                <input type="text" class="form-control bank-req" name="account_number" id="edit_account_number" placeholder=" ">
+                                <label class="form-label-joint">Account Number <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="edit_account_number_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="ifsc_code" id="edit_ifsc_code" placeholder=" " maxlength="11" required>
-                                <label class="form-label-joint">IFSC Code*</label>
+                                <input type="text" class="form-control bank-req" name="ifsc_code" id="edit_ifsc_code" placeholder=" " maxlength="11">
+                                <label class="form-label-joint">IFSC Code <span class="bank-star">*</span></label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="edit_ifsc_code_error"></small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 bank-field-wrap">
                             <div class="input-floating-wrap">
                                 <input type="text" class="form-control" name="branch_name" id="edit_branch_name" placeholder=" ">
                                 <label class="form-label-joint">Branch Name</label>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 upi-field-wrap">
                             <div class="input-floating-wrap">
                                 <input type="text" class="form-control" name="upi_number" id="edit_upi_number" placeholder=" ">
                                 <label class="form-label-joint">UPI Number</label>
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 upi-field-wrap">
                             <div class="input-floating-wrap">
-                                <input type="text" class="form-control" name="upi_id" id="edit_upi_id" placeholder=" ">
-                                <label class="form-label-joint">UPI ID (VPA)</label>
+                                <input type="text" class="form-control upi-req" name="upi_id" id="edit_upi_id" placeholder=" ">
+                                <label class="form-label-joint">UPI ID (VPA) <span class="upi-star">*</span></label>
                             </div>
+                            <small class="text-danger error mt-1 d-block" id="edit_upi_id_error"></small>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label text-muted small mb-1">Update Passbook / Cancelled Cheque (Optional)</label>
@@ -312,6 +336,36 @@
                 $('#add_' + nameAttr + '_error').html('');
                 $('#edit_' + nameAttr + '_error').html('');
             }
+        });
+
+        // Function to toggle required state based on submission type
+        function handleSubmissionTypeChange(formPrefix) {
+            let val = $('#' + formPrefix + '_submission_type').val();
+
+            if (val === 'bank') {
+                $('.bank-req').attr('required', true);
+                $('.bank-star').show();
+                $('.upi-req').removeAttr('required');
+                $('.upi-star').hide();
+            } else if (val === 'upi') {
+                $('.bank-req').removeAttr('required');
+                $('.bank-star').hide();
+                $('.upi-req').attr('required', true);
+                $('.upi-star').show();
+            } else { // both
+                $('.bank-req').attr('required', true);
+                $('.bank-star').show();
+                $('.upi-req').attr('required', true);
+                $('.upi-star').show();
+            }
+        }
+
+        $(document).on('change', '#add_submission_type', function() {
+            handleSubmissionTypeChange('add');
+        });
+
+        $(document).on('change', '#edit_submission_type', function() {
+            handleSubmissionTypeChange('edit');
         });
 
         // Add Form Submit with File Upload

@@ -12,10 +12,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('account_holder_name');
-            $table->string('bank_name');          
-            $table->string('account_number');     
-            $table->string('ifsc_code', 11);      
+            $table->string('submission_type')->default('both')->comment('bank, upi, both');
+            $table->string('account_holder_name')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('account_number')->nullable();
+            $table->string('ifsc_code', 11)->nullable();
             $table->string('branch_name')->nullable();
             $table->string('upi_number', 15)->nullable();
             $table->string('upi_id')->nullable();

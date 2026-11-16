@@ -55,9 +55,11 @@ class UserBankController extends Controller
             ->addColumn('proof_col', function ($row) {
                 if ($row->bank_proof) {
                     $url = asset('storage/' . $row->bank_proof);
-                    return '<a href="' . $url . '" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" title="View Proof" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-eye fs-6"></i></a>';
+                    return '<div class="d-flex justify-content-center align-items-center">
+                                <a href="' . $url . '" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" title="View Proof" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-eye fs-6"></i></a>
+                            </div>';
                 }
-                return '<span class="text-muted small">No Proof</span>';
+                return '<div class="text-center"><span class="text-muted small">No Proof</span></div>';
             })
             ->addColumn('status_badge', function ($row) {
                 $checked = (int)$row->is_verified === 1 ? 'checked' : '';
@@ -86,28 +88,31 @@ class UserBankController extends Controller
             ->make(true);
     }
 
-    /**
-     * Store Bank Details via AJAX
-     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
             'user_id'             => 'required|integer|exists:users,id',
-            'account_holder_name' => 'required|string|max:255',
-            'bank_name'           => 'required|string|max:255',
-            'account_number'      => 'required|string|max:50',
-            'ifsc_code'           => 'required|string|size:11',
+            'submission_type'     => 'required|in:bank,upi,both',
+
+            // Conditional rules based on submission_type
+            'account_holder_name' => 'required_if:submission_type,bank,both|nullable|string|max:255',
+            'bank_name'           => 'required_if:submission_type,bank,both|nullable|string|max:255',
+            'account_number'      => 'required_if:submission_type,bank,both|nullable|string|max:50',
+            'ifsc_code'           => 'required_if:submission_type,bank,both|nullable|string|size:11',
+
             'branch_name'         => 'nullable|string|max:255',
             'upi_number'          => 'nullable|string|max:15',
-            'upi_id'              => 'nullable|string|max:255',
+            'upi_id'              => 'required_if:submission_type,upi,both|nullable|string|max:255',
             'bank_proof'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
             'user_id.required'             => 'Please select a user.',
-            'account_holder_name.required' => 'Account holder name is required.',
-            'bank_name.required'           => 'Bank name is required.',
-            'account_number.required'      => 'Account number is required.',
-            'ifsc_code.required'           => 'IFSC code is required.',
-            'ifsc_code.size'               => 'IFSC code must be exactly 11 characters.',
+            'submission_type.required'     => 'Please select a submission type.',
+            'account_holder_name.required_if' => 'Account holder name is required.',
+            'bank_name.required_if'           => 'Bank name is required.',
+            'account_number.required_if'      => 'Account number is required.',
+            'ifsc_code.required_if'           => 'IFSC code is required.',
+            'ifsc_code.size'                  => 'IFSC code must be exactly 11 characters.',
+            'upi_id.required_if'              => 'UPI ID is required when selecting UPI details.',
         ]);
 
         $companyId = auth()->user()->company_id;
@@ -145,9 +150,6 @@ class UserBankController extends Controller
         }
     }
 
-    /**
-     * Update Bank Details via AJAX
-     */
     public function update(Request $request, int $id): JsonResponse
     {
         $companyId = auth()->user()->company_id;
@@ -155,21 +157,26 @@ class UserBankController extends Controller
 
         $request->validate([
             'user_id'             => 'required|integer|exists:users,id',
-            'account_holder_name' => 'required|string|max:255',
-            'bank_name'           => 'required|string|max:255',
-            'account_number'      => 'required|string|max:50',
-            'ifsc_code'           => 'required|string|size:11',
+            'submission_type'     => 'required|in:bank,upi,both',
+
+            'account_holder_name' => 'required_if:submission_type,bank,both|nullable|string|max:255',
+            'bank_name'           => 'required_if:submission_type,bank,both|nullable|string|max:255',
+            'account_number'      => 'required_if:submission_type,bank,both|nullable|string|max:50',
+            'ifsc_code'           => 'required_if:submission_type,bank,both|nullable|string|size:11',
+
             'branch_name'         => 'nullable|string|max:255',
             'upi_number'          => 'nullable|string|max:15',
-            'upi_id'              => 'nullable|string|max:255',
+            'upi_id'              => 'required_if:submission_type,upi,both|nullable|string|max:255',
             'bank_proof'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ], [
             'user_id.required'             => 'Please select a user.',
-            'account_holder_name.required' => 'Account holder name is required.',
-            'bank_name.required'           => 'Bank name is required.',
-            'account_number.required'      => 'Account number is required.',
-            'ifsc_code.required'           => 'IFSC code is required.',
-            'ifsc_code.size'               => 'IFSC code must be exactly 11 characters.',
+            'submission_type.required'     => 'Please select a submission type.',
+            'account_holder_name.required_if' => 'Account holder name is required.',
+            'bank_name.required_if'           => 'Bank name is required.',
+            'account_number.required_if'      => 'Account number is required.',
+            'ifsc_code.required_if'           => 'IFSC code is required.',
+            'ifsc_code.size'                  => 'IFSC code must be exactly 11 characters.',
+            'upi_id.required_if'              => 'UPI ID is required when selecting UPI details.',
         ]);
 
         $proofPath = $bankDetail->bank_proof;
@@ -218,7 +225,7 @@ class UserBankController extends Controller
 
         $companyId = auth()->user()->company_id;
         $bankDetail = UserBankDetail::where('company_id', $companyId)->findOrFail($request->id);
-        
+
         $bankDetail->is_verified = (int)$request->is_verified;
         $bankDetail->save();
 

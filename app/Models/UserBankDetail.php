@@ -14,6 +14,7 @@ class UserBankDetail extends Model
     protected $fillable = [
         'company_id',
         'user_id',
+        'submission_type',
         'account_holder_name',
         'bank_name',
         'account_number',
