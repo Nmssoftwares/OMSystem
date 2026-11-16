@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('employee_code', 30)->nullable();
             $table->string('designation', 100)->nullable();
             $table->string('department', 100)->nullable();
-            $table->decimal('current_wage', 10, 2)->default(0.00)->after('status')->comment('Daily wage / per day salary');
+            $table->decimal('current_wage', 10, 2)->default(0.00)->comment('Daily wage / per day salary');
             $table->date('dob')->nullable();
             $table->date('joining_date')->nullable();
             $table->tinyInteger('gender')->nullable()->comment('1=Male, 2=Female, 3=Other');

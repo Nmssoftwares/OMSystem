@@ -55,6 +55,14 @@
                             </div>
                             <small class="text-danger error mt-1 d-block" id="gender_error"></small>
                         </div>
+                        <!-- Added Daily Wage Field -->
+                        <div class="col-md-4">
+                            <div class="input-floating-wrap">
+                                <input type="number" step="0.01" class="form-control" id="current_wage" name="current_wage" placeholder=" " value="{{ old('current_wage', $user->current_wage ?? 0.00) }}" required>
+                                <label class="form-label-joint">Daily Wage (₹)*</label>
+                            </div>
+                            <small class="text-danger error mt-1 d-block" id="current_wage_error"></small>
+                        </div>
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
                                 <select name="role" id="role" class="form-select" required>
@@ -171,6 +179,11 @@
                 $('#phone').addClass('is-invalid');
                 isValid = false;
             }
+            if ($('#current_wage').val() === '' || parseFloat($('#current_wage').val()) < 0) {
+                $('#current_wage_error').text('Valid daily wage is required.');
+                $('#current_wage').addClass('is-invalid');
+                isValid = false;
+            }
             if ($('.module-checkbox').length > 0 && $('.module-checkbox:checked').length === 0) {
                 $('#modules_error').text('Please select at least one module.');
                 isValid = false;
@@ -226,7 +239,6 @@
                             if (!firstError) firstError = val[0];
                         });
 
-                        // Show top alert notification for duplicate or validation errors
                         if (typeof showAlert === 'function') {
                             showAlert('danger', firstError || 'Please fix the validation errors below.');
                         }

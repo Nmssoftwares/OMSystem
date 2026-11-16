@@ -12,6 +12,7 @@
                         <th>User Details</th>
                         <th>Company</th>
                         <th>Contact Info</th>
+                        <th>Daily Wage</th>
                         <th class="text-center">Status</th>
                         <th class="text-center">Actions</th>
                      </tr>
@@ -22,11 +23,6 @@
       </div>
    </div>
 </section>
-
-<!-- Floating Bottom-Right Add Button -->
-<a href="{{ route('um.users.create', ['role' => $role ?? 3]) }}" title="Add New Account" class="floating-action-btn floating-btn-add">
-   <i class="bi bi-plus-lg"></i>
-</a>
 
 <!-- 1. Change Password Modal -->
 <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
@@ -55,7 +51,67 @@
    </div>
 </div>
 
-<!-- 2. Manage Modules Modal -->
+<!-- 2. Update Daily Wage Modal -->
+<div class="modal fade" id="updateWageModal" tabindex="-1" aria-hidden="true">
+   <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+         <form id="updateWageForm">
+            @csrf
+            <input type="hidden" name="user_id" id="wage_user_id">
+            <div class="modal-header bg-light">
+               <h5 class="modal-title fw-bold text-dark fs-6"><i class="bi bi-currency-rupee me-1 text-warning"></i> Update Daily Wage Rate</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+               <div class="mb-3">
+                  <label class="form-label fw-semibold small">Daily Wage (₹)*</label>
+                  <input type="number" step="1" class="form-control" name="current_wage" id="modal_current_wage" placeholder="Enter daily wage amount" required>
+                  <small class="text-danger error mt-1 d-block" id="modal_wage_error"></small>
+               </div>
+            </div>
+            <div class="modal-footer bg-light">
+               <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
+               <button type="submit" class="btn btn-warning btn-sm px-4 text-white" id="saveWageBtn">Update Wage</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+<!-- 3. Wage History Logs Modal -->
+<div class="modal fade" id="wageHistoryModal" tabindex="-1" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+         <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold text-dark fs-6"><i class="bi bi-clock-history me-1 text-info"></i> Daily Wage Audit Logs</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body p-4" style="max-height: 70vh; overflow-y: auto;">
+            <div class="table-responsive">
+               <table class="table table-bordered table-striped align-small mb-0">
+                  <thead>
+                     <tr class="table-light">
+                        <th>#</th>
+                        <th>Old Wage</th>
+                        <th>New Wage</th>
+                        <th>Changed By (Admin)</th>
+                        <th>Date & Time</th>
+                     </tr>
+                  </thead>
+                  <tbody id="wageHistoryTableBody">
+                     <!-- Dynamically loaded via AJAX -->
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div class="modal-footer bg-light">
+            <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Close</button>
+         </div>
+      </div>
+   </div>
+</div>
+
+<!-- 4. Manage Modules Modal -->
 <div class="modal fade" id="manageModulesModal" tabindex="-1" aria-hidden="true">
    <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content border-0 shadow">
@@ -80,6 +136,11 @@
       </div>
    </div>
 </div>
+
+<!-- Floating Bottom-Right Add Button -->
+<a href="{{ route('um.users.create', ['role' => $role ?? 3]) }}" title="Add New Account" class="floating-action-btn floating-btn-add">
+   <i class="bi bi-plus-lg"></i>
+</a>
 @endsection
 
 @section('scripts')
@@ -131,6 +192,10 @@
             {
                data: 'contact_info',
                name: 'phone'
+            },
+            {
+               data: 'daily_wage',
+               name: 'current_wage'
             },
             {
                data: 'status_badge',
@@ -209,7 +274,82 @@
          });
       });
 
-      // 2. Open Manage Modules Modal & Load Modules via AJAX
+      // 2. Open Update Wage Modal
+      $(document).on('click', '.updateWageBtn', function() {
+         let userId = $(this).data('userid');
+         let wage = $(this).data('wage');
+         $('#wage_user_id').val(userId);
+         $('#modal_current_wage').val(wage);
+         $('#modal_wage_error').html('');
+      });
+
+      // Submit Wage Update
+      $('#updateWageForm').on('submit', function(e) {
+         e.preventDefault();
+         let btn = $('#saveWageBtn');
+         btn.prop('disabled', true).text('Updating...');
+         $('#modal_wage_error').html('');
+
+         $.ajax({
+            url: "{{ route('um.users.wage.update') }}",
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+               btn.prop('disabled', false).text('Update Wage');
+               $('#updateWageModal').modal('hide');
+               if (typeof showAlert === 'function') showAlert('success', response.message);
+               dataTable.ajax.reload(null, false);
+            },
+            error: function(xhr) {
+               btn.prop('disabled', false).text('Update Wage');
+               if (xhr.status === 422 && xhr.responseJSON.errors?.current_wage) {
+                  $('#modal_wage_error').text(xhr.responseJSON.errors.current_wage[0]);
+               } else {
+                  alert(xhr.responseJSON?.message || 'Failed to update wage.');
+               }
+            }
+         });
+      });
+
+      // 3. Open Wage History Logs Modal & Load via AJAX
+      $(document).on('click', '.viewWageHistoryBtn', function() {
+         let userId = $(this).data('userid');
+         $('#wageHistoryTableBody').html('<tr><td colspan="5" class="text-center py-3"><div class="spinner-border spinner-border-sm text-info"></div> Loading history...</td></tr>');
+
+         $.ajax({
+            url: "{{ route('um.users.wage.logs.get') }}",
+            type: 'GET',
+            data: {
+               user_id: userId
+            },
+            success: function(response) {
+               if (response.status === 'success') {
+                  let logs = response.logs;
+                  let rows = '';
+                  if (logs.length > 0) {
+                     $.each(logs, function(i, log) {
+                        let adminName = log.admin ? (log.admin.first_name + ' ' + (log.admin.last_name || '')) : 'System / Admin';
+                        rows += `<tr>
+                           <td>${i + 1}</td>
+                           <td><span class="text-danger fw-semibold">₹ ${parseFloat(log.old_wage).toFixed(2)}</span></td>
+                           <td><span class="text-success fw-semibold">₹ ${parseFloat(log.new_wage).toFixed(2)}</span></td>
+                           <td>${adminName}</td>
+                           <td><small class="text-muted">${log.created_at}</small></td>
+                        </tr>`;
+                     });
+                  } else {
+                     rows = '<tr><td colspan="5" class="text-center text-muted py-3">No wage history logs found.</td></tr>';
+                  }
+                  $('#wageHistoryTableBody').html(rows);
+               }
+            },
+            error: function() {
+               $('#wageHistoryTableBody').html('<tr><td colspan="5" class="text-center text-danger py-3">Failed to load wage history.</td></tr>');
+            }
+         });
+      });
+
+      // 4. Open Manage Modules Modal & Load Modules via AJAX
       $(document).on('click', '.manageModulesBtn', function() {
          let userId = $(this).data('userid');
          $('#module_user_id').val(userId);

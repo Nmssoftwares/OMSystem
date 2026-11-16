@@ -53,6 +53,14 @@
                             </div>
                             <small class="text-danger error mt-1 d-block" id="gender_error"></small>
                         </div>
+                        <!-- Added Daily Wage Field -->
+                        <div class="col-md-4">
+                            <div class="input-floating-wrap">
+                                <input type="number" step="0.01" class="form-control" id="current_wage" name="current_wage" placeholder=" " required>
+                                <label class="form-label-joint">Daily Wage (₹)*</label>
+                            </div>
+                            <small class="text-danger error mt-1 d-block" id="current_wage_error"></small>
+                        </div>
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
                                 <select name="role" id="role" class="form-select" required>
@@ -146,7 +154,6 @@
             $('.error').html('');
             $('.form-control, .form-select').removeClass('is-invalid');
 
-            // Client-side validations
             if (!$('#role').val()) {
                 $('#role_error').text('Please select a role.');
                 $('#role').addClass('is-invalid');
@@ -165,6 +172,11 @@
             if (!$('#phone').val().trim()) {
                 $('#phone_error').text('Contact number is required.');
                 $('#phone').addClass('is-invalid');
+                isValid = false;
+            }
+            if ($('#current_wage').val() === '' || parseFloat($('#current_wage').val()) < 0) {
+                $('#current_wage_error').text('Valid daily wage is required.');
+                $('#current_wage').addClass('is-invalid');
                 isValid = false;
             }
             if (!$('#password').val() || $('#password').val().length < 6) {

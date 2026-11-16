@@ -27,6 +27,8 @@ Route::prefix('users')->name('users.')->controller(UserController::class)->group
    Route::get('modules-update/get', 'getUserModules')->name('modules.get');
    Route::post('modules-update', 'updateUserModules')->name('modules.update');
    Route::get('export/pdf', 'exportPdf')->name('export.pdf');
+   Route::post('wage-update', 'updateWage')->name('wage.update');
+   Route::get('wage-logs/get', 'getWageLogs')->name('wage.logs.get');
 });
 
 // 5. User Bank & UPI Details Routes (Added)
