@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Um\DashboardController;
 use App\Http\Controllers\Um\UserController;
-use App\Http\Controllers\Um\UserBankController; // Added UserBankController
+use App\Http\Controllers\Um\UserBankController;
+use App\Http\Controllers\Um\UserDocumentController;
 
 // 1. Dashboard
 Route::controller(DashboardController::class)->group(function () {
@@ -30,6 +31,17 @@ Route::prefix('users')->name('users.')->controller(UserController::class)->group
 
 // 5. User Bank & UPI Details Routes (Added)
 Route::prefix('user-banks')->name('user-banks.')->controller(UserBankController::class)->group(function () {
+   Route::get('/', 'index')->name('index');
+   Route::get('datatable', 'datatable')->name('datatable');
+   Route::post('store', 'store')->name('store');
+   Route::put('update/{id}', 'update')->name('update');
+   Route::post('update-status', 'updateStatus')->name('update-status');
+   Route::delete('delete/{id}', 'destroy')->name('destroy');
+   Route::get('export/pdf', 'exportPdf')->name('export.pdf');
+});
+
+// 6. User Official Documents Routes (Added)
+Route::prefix('user-documents')->name('user-documents.')->controller(UserDocumentController::class)->group(function () {
    Route::get('/', 'index')->name('index');
    Route::get('datatable', 'datatable')->name('datatable');
    Route::post('store', 'store')->name('store');

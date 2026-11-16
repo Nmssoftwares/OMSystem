@@ -200,6 +200,26 @@
             ajax: {
                 url: "{{ route('um.user-documents.datatable') }}",
             },
+            dom: 'Bfrtip',
+            buttons: [{
+                extend: 'excel',
+                text: 'Excel',
+                className: 'buttons-excel dt-button',
+                exportOptions: {
+                    columns: [0, 1, 2], // User Info, Document Type, Document Number
+                    format: {
+                        body: function(data, row, column, node) {
+                            return data ? data.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim() : '';
+                        }
+                    }
+                }
+            }, {
+                text: 'PDF',
+                className: 'buttons-pdf dt-button',
+                action: function(e, dt, node, config) {
+                    window.location.href = "{{ route('um.user-documents.export.pdf') }}";
+                }
+            }],
             columns: [{
                     data: 'user_info',
                     name: 'user_id'

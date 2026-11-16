@@ -35,5 +35,12 @@
                 <span>Bank & UPI Details</span>
             </a>
         </li>
+        <!-- User Official Documents -->
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('um.user-documents.*') ? '' : 'collapsed' }}" href="{{ route('um.user-documents.index') }}">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Official Documents</span>
+            </a>
+        </li>
     </ul>
 </aside>

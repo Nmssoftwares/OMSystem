@@ -9,6 +9,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Company;
 
 class UserDocumentController extends Controller
 {
@@ -105,7 +107,7 @@ class UserDocumentController extends Controller
         $frontPath = null;
         $backPath = null;
 
-        $folderPath = "{$companyId}/um/documents/{$userId}";
+        $folderPath = "{$companyId}/um/documents";
 
         if ($request->hasFile('document_front_path')) {
             $frontPath = $request->file('document_front_path')->store($folderPath, 'public');
@@ -154,7 +156,7 @@ class UserDocumentController extends Controller
         ]);
 
         $userId = $request->user_id;
-        $folderPath = "{$companyId}/um/documents/{$userId}";
+        $folderPath = "{$companyId}/um/documents";
 
         $frontPath = $document->document_front_path;
         if ($request->hasFile('document_front_path')) {
@@ -242,5 +244,24 @@ class UserDocumentController extends Controller
                 'message' => 'Failed to delete record: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Export User Documents to PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $companyId = auth()->user()->company_id;
+        $documents = UserDocument::with('user')->where('company_id', $companyId)->get();
+        $company = Company::find($companyId);
+
+        $data = [
+            'documents'    => $documents,
+            'company_name' => $company ? $company->company_name : 'OMSystem Portal',
+            'company_logo' => $company ? $company->company_logo : 'assets/img/main-logo.png'
+        ];
+
+        $pdf = Pdf::loadView('um.pdf.user_documents_list', $data);
+        return $pdf->download('User_Documents_' . date('Ymd_His') . '.pdf');
     }
 }
