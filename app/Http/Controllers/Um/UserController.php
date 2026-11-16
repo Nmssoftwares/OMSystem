@@ -63,7 +63,7 @@ class UserController extends Controller
             return '<span class="small text-muted">' . e($row->phone ?? 'No Contact') . '</span>';
          })
          ->addColumn('daily_wage', function ($row) {
-            return '<span class="fw-bold text-success">₹ ' . number_format($row->current_wage ?? 0, 2) . '</span>';
+            return '<span class="fw-bold text-success">₹ ' . number_format($row->current_wage ?? 0, 0) . '</span>';
          })
          ->addColumn('status_badge', function ($row) {
             $checked = (int) $row->status === 1 ? 'checked' : '';
@@ -78,7 +78,7 @@ class UserController extends Controller
             // 2. Change Password Button
             $html .= '<button type="button" class="btn btn-sm btn-outline-success rounded-circle changePasswordBtn" data-userid="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#changePasswordModal" title="Reset Password" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-key fs-6"></i></button>';
             // 3. Update Wage Button
-            $html .= '<button type="button" class="btn btn-sm btn-outline-warning rounded-circle updateWageBtn" data-userid="' . $row->id . '" data-wage="' . ($row->current_wage ?? 0) . '" data-bs-toggle="modal" data-bs-target="#updateWageModal" title="Update Daily Wage" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-currency-rupee fs-6"></i></button>';
+            $html .= '<button type="button" class="btn btn-sm btn-outline-warning rounded-circle updateWageBtn" data-userid="' . $row->id . '" data-wage="' . (int)($row->current_wage ?? 0) . '" data-bs-toggle="modal" data-bs-target="#updateWageModal" title="Update Daily Wage" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-currency-rupee fs-6"></i></button>';
             // 4. View Wage History Button
             $html .= '<button type="button" class="btn btn-sm btn-outline-info rounded-circle viewWageHistoryBtn" data-userid="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#wageHistoryModal" title="Wage History Logs" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-clock-history fs-6"></i></button>';
             // 5. Manage Modules Popup Button

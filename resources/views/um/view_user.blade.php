@@ -277,7 +277,7 @@
       // 2. Open Update Wage Modal
       $(document).on('click', '.updateWageBtn', function() {
          let userId = $(this).data('userid');
-         let wage = $(this).data('wage');
+         let wage = parseInt($(this).data('wage')) || 0;
          $('#wage_user_id').val(userId);
          $('#modal_current_wage').val(wage);
          $('#modal_wage_error').html('');
@@ -329,12 +329,21 @@
                   if (logs.length > 0) {
                      $.each(logs, function(i, log) {
                         let adminName = log.admin ? (log.admin.first_name + ' ' + (log.admin.last_name || '')) : 'System / Admin';
+                        let d = new Date(log.created_at);
+                        let day = String(d.getDate()).padStart(2, '0');
+                        let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        let month = months[d.getMonth()];
+                        let year = d.getFullYear();
+                        let hours = String(d.getHours()).padStart(2, '0');
+                        let minutes = String(d.getMinutes()).padStart(2, '0');
+                        let formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
+
                         rows += `<tr>
                            <td>${i + 1}</td>
-                           <td><span class="text-danger fw-semibold">₹ ${parseFloat(log.old_wage).toFixed(2)}</span></td>
-                           <td><span class="text-success fw-semibold">₹ ${parseFloat(log.new_wage).toFixed(2)}</span></td>
+                           <td><span class="text-danger fw-semibold">₹ ${parseFloat(log.old_wage).toFixed(0)}</span></td>
+                           <td><span class="text-success fw-semibold">₹ ${parseFloat(log.new_wage).toFixed(0)}</span></td>
                            <td>${adminName}</td>
-                           <td><small class="text-muted">${log.created_at}</small></td>
+                           <td><small class="text-muted">${formattedDate}</small></td>
                         </tr>`;
                      });
                   } else {
