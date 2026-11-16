@@ -55,7 +55,7 @@ class PettyCashController extends Controller
             })
             ->addColumn('action', function ($row) {
                 $html = '<div class="d-flex align-items-center justify-content-center gap-1">';
-                // Delete Button triggers modal
+                $html .= '<a href="' . route('pc.transactions.edit', $row->id) . '" class="btn btn-sm btn-outline-primary rounded-circle" title="Edit" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-pencil fs-6"></i></a>';
                 $html .= '<button type="button" class="btn btn-sm btn-outline-danger rounded-circle deleteTxBtn" data-id="' . $row->id . '" title="Delete" style="width:30px; height:30px; display:flex; align-items:center; justify-content:center;"><i class="bi bi-trash fs-6"></i></button>';
                 $html .= '</div>';
                 return $html;
@@ -111,6 +111,62 @@ class PettyCashController extends Controller
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Failed to record transaction: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Show Edit Petty Cash Transaction Page
+     */
+    public function edit(int $id)
+    {
+        $companyId = auth()->user()->company_id;
+
+        $transaction = PettyCashTransaction::where('company_id', $companyId)->findOrFail($id);
+
+        $data['title'] = 'Edit Petty Cash / Advance';
+        $data['transaction'] = $transaction;
+        $data['workers'] = User::where('company_id', $companyId)
+            ->where('role', 3)
+            ->where('status', 1)
+            ->get();
+
+        return view('pc.edit_transaction', $data);
+    }
+
+    /**
+     * Update Petty Cash Transaction via AJAX
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $request->validate([
+            'user_id'          => 'required|integer|exists:users,id',
+            'amount'           => 'required|numeric|min:1',
+            'transaction_type' => 'required|in:1,2,3',
+            'transaction_date' => 'required|date',
+            'notes'            => 'nullable|string|max:500',
+        ]);
+
+        $companyId = auth()->user()->company_id;
+        $transaction = PettyCashTransaction::where('company_id', $companyId)->findOrFail($id);
+
+        try {
+            $transaction->update([
+                'user_id'          => $request->user_id,
+                'amount'           => (int) $request->amount,
+                'transaction_type' => $request->transaction_type,
+                'notes'            => $request->notes,
+                'transaction_date' => $request->transaction_date,
+            ]);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Petty cash transaction updated successfully.',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to update transaction: ' . $e->getMessage()
             ], 500);
         }
     }
