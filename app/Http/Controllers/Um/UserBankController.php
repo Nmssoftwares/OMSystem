@@ -72,6 +72,7 @@ class UserBankController extends Controller
                 $html .= '<button type="button" class="btn btn-sm btn-outline-primary rounded-circle editBankBtn" 
                             data-id="' . $row->id . '" 
                             data-user_id="' . $row->user_id . '"
+                            data-subtype="' . e($row->submission_type) . '"
                             data-holder="' . e($row->account_holder_name) . '"
                             data-bank="' . e($row->bank_name) . '"
                             data-account="' . e($row->account_number) . '"
@@ -93,8 +94,6 @@ class UserBankController extends Controller
         $request->validate([
             'user_id'             => 'required|integer|exists:users,id',
             'submission_type'     => 'required|in:bank,upi,both',
-
-            // Conditional rules based on submission_type
             'account_holder_name' => 'required_if:submission_type,bank,both|nullable|string|max:255',
             'bank_name'           => 'required_if:submission_type,bank,both|nullable|string|max:255',
             'account_number'      => 'required_if:submission_type,bank,both|nullable|string|max:50',
@@ -123,24 +122,24 @@ class UserBankController extends Controller
         }
 
         try {
-            UserBankDetail::updateOrCreate(
-                ['user_id' => $request->user_id],
-                [
-                    'company_id'          => $companyId,
-                    'account_holder_name' => trim($request->account_holder_name),
-                    'bank_name'           => trim($request->bank_name),
-                    'account_number'      => trim($request->account_number),
-                    'ifsc_code'           => strtoupper(trim($request->ifsc_code)),
-                    'branch_name'         => trim($request->branch_name),
-                    'upi_number'          => trim($request->upi_number),
-                    'upi_id'              => trim($request->upi_id),
-                    'bank_proof'          => $proofPath ?? UserBankDetail::where('user_id', $request->user_id)->value('bank_proof'),
-                ]
-            );
+            // Created a new record every time for multi-account support
+            UserBankDetail::create([
+                'company_id'          => $companyId,
+                'user_id'             => $request->user_id,
+                'submission_type'     => $request->submission_type,
+                'account_holder_name' => trim($request->account_holder_name),
+                'bank_name'           => trim($request->bank_name),
+                'account_number'      => trim($request->account_number),
+                'ifsc_code'           => strtoupper(trim($request->ifsc_code)),
+                'branch_name'         => trim($request->branch_name),
+                'upi_number'          => trim($request->upi_number),
+                'upi_id'              => trim($request->upi_id),
+                'bank_proof'          => $proofPath,
+            ]);
 
             return response()->json([
                 'status'  => 'success',
-                'message' => 'Bank & UPI details saved successfully.',
+                'message' => 'Bank & UPI details added successfully.',
             ]);
         } catch (\Throwable $e) {
             return response()->json([

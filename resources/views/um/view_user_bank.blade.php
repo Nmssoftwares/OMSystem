@@ -411,6 +411,7 @@
         $(document).on('click', '.editBankBtn', function() {
             $('#edit_bank_id').val($(this).data('id'));
             $('#edit_user_id').val($(this).data('user_id'));
+            $('#edit_submission_type').val($(this).data('subtype')).trigger('change');
             $('#edit_account_holder_name').val($(this).data('holder'));
             $('#edit_bank_name').val($(this).data('bank'));
             $('#edit_account_number').val($(this).data('account'));
