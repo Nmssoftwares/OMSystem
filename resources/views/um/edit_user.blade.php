@@ -58,7 +58,7 @@
                         <!-- Added Daily Wage Field -->
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
-                                <input type="number" step="0.01" class="form-control" id="current_wage" name="current_wage" placeholder=" " value="{{ old('current_wage', $user->current_wage ?? 0.00) }}" required>
+                                <input type="number" step="1" class="form-control" id="current_wage" name="current_wage" placeholder=" " value="{{ old('current_wage', $user->current_wage ?? 0) }}" required>
                                 <label class="form-label-joint">Daily Wage (₹)*</label>
                             </div>
                             <small class="text-danger error mt-1 d-block" id="current_wage_error"></small>

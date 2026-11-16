@@ -90,6 +90,23 @@ class UserController extends Controller
          ->make(true);
    }
 
+   public function create(Request $request)
+   {
+      $data['title'] = 'UM - Add New User / Admin';
+      $data['role'] = $request->get('role', 3);
+
+      $companyId = auth()->user()->company_id;
+
+      $assignedModuleIds = AssignModule::where('company_id', $companyId)->pluck('module_id');
+      $data['groupedModules'] = Module::whereIn('id', $assignedModuleIds)
+         ->where('status', 1)
+         ->orderBy('group_order')
+         ->get()
+         ->groupBy('group_name');
+
+      return view('um.add_user', $data);
+   }
+
    public function store(Request $request): JsonResponse
    {
       if ($request->filled('phone')) {
@@ -127,7 +144,6 @@ class UserController extends Controller
          'status'       => 1,
       ]);
 
-      // Initial Wage Log Entry
       if ($wage > 0) {
          UserWageLog::create([
             'user_id'    => $user->id,
@@ -152,6 +168,26 @@ class UserController extends Controller
          'status'  => 'success',
          'message' => 'Account, wage and modules assigned successfully.',
       ]);
+   }
+
+   public function edit($id)
+   {
+      $companyId = auth()->user()->company_id;
+      $data['title'] = 'UM - Edit User / Admin';
+
+      $data['user'] = User::where('company_id', $companyId)->findOrFail($id);
+
+      $assignedModuleIds = AssignModule::where('company_id', $companyId)->pluck('module_id');
+
+      $data['groupedModules'] = Module::whereIn('id', $assignedModuleIds)
+         ->where('status', 1)
+         ->orderBy('group_order')
+         ->get()
+         ->groupBy('group_name');
+
+      $data['userModules'] = UserModule::where('user_id', $id)->pluck('module_id')->toArray();
+
+      return view('um.edit_user', $data);
    }
 
    public function update(Request $request, $id): JsonResponse
@@ -193,7 +229,6 @@ class UserController extends Controller
          $user->current_wage = $newWage;
          $user->save();
 
-         // Record Wage Log if wage changed
          if ((float)$oldWage !== (float)$newWage) {
             UserWageLog::create([
                'user_id'    => $user->id,
@@ -225,9 +260,6 @@ class UserController extends Controller
       }
    }
 
-   /**
-    * Direct Update Daily Wage via Modal
-    */
    public function updateWage(Request $request): JsonResponse
    {
       $request->validate([
@@ -260,9 +292,6 @@ class UserController extends Controller
       ]);
    }
 
-   /**
-    * Fetch Wage Logs for History Modal
-    */
    public function getWageLogs(Request $request): JsonResponse
    {
       $companyId = auth()->user()->company_id;
