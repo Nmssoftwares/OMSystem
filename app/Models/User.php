@@ -20,14 +20,22 @@ class User extends Authenticatable
 
     protected $fillable = [
         'company_id',
-        'name',
         'first_name',
         'last_name',
+        'employee_code',
+        'designation',
+        'department',
+        'current_wage',
+        'dob',
+        'joining_date',
+        'gender',
         'email',
         'phone',
         'password',
         'role',
         'status',
+        'allow_remote_punch',
+        'profile_image',
         'last_login_at',
     ];
 
@@ -58,5 +66,10 @@ class User extends Authenticatable
     public function bankDetail()
     {
         return $this->hasOne(UserBankDetail::class, 'user_id');
+    }
+
+    public function wageLogs()
+    {
+        return $this->hasMany(UserWageLog::class, 'user_id');
     }
 }

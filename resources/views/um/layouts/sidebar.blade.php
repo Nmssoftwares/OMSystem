@@ -10,13 +10,6 @@
         </li><!-- End Dashboard Nav -->
 
         <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('um.users.create') ? '' : 'collapsed' }}" href="{{ route('um.users.create') }}">
-                <i class="bi bi-person-badge-fill"></i>
-                <span>Add User/Admin</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('um.admins*') ? '' : 'collapsed' }}" href="{{ route('um.admins.index') }}">
                 <i class="bi bi-person-badge-fill"></i>
                 <span>Admins</span>
@@ -32,14 +25,14 @@
         <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('um.user-banks.*') ? '' : 'collapsed' }}" href="{{ route('um.user-banks.index') }}">
                 <i class="bi bi-wallet2"></i>
-                <span>Bank & UPI Details</span>
+                <span>Bank & UPI</span>
             </a>
         </li>
-        <!-- User Official Documents -->
+
         <li class="nav-item">
             <a class="nav-link {{ request()->routeIs('um.user-documents.*') ? '' : 'collapsed' }}" href="{{ route('um.user-documents.index') }}">
                 <i class="bi bi-file-earmark-text"></i>
-                <span>Official Documents</span>
+                <span>Documents</span>
             </a>
         </li>
     </ul>

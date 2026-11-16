@@ -153,7 +153,7 @@
 </section>
 
 <!-- Floating Bottom-Right View Button -->
-<a href="{{ route('superadmin.companies.index') }}" title="View Companies" class="floating-action-btn floating-btn-view">
+<a href="{{ route('superadmin.companies.index') }}" title="View Companies" class="floating-action-btn">
    <i class="bi bi-eye-fill"></i>
 </a>
 @endsection
