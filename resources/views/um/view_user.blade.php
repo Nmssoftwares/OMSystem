@@ -65,7 +65,7 @@
             <div class="modal-body p-4">
                <div class="mb-3">
                   <label class="form-label fw-semibold small">Daily Wage (₹)*</label>
-                  <input type="number" step="1" class="form-control" name="current_wage" id="modal_current_wage" value="0" placeholder="Enter daily wage amount" required>
+                  <input type="number" step="1" min="1" class="form-control" name="current_wage" id="modal_current_wage" placeholder="Enter daily wage amount" required>
                   <small class="text-danger error mt-1 d-block" id="modal_wage_error"></small>
                </div>
             </div>

@@ -74,10 +74,10 @@
                         </div>
                     </div>
 
-                    <!-- 2. Assign Modules Section -->
+                    <!-- 2. Assign Modules Section (Optional) -->
                     @if(isset($groupedModules) && $groupedModules->isNotEmpty())
                     <div class="section-title mt-4 mb-3 fw-bold text-dark" style="font-size: 15px;">
-                        <i class="bi bi-grid-3x3-gap-fill text-primary me-1"></i> 2. Manage Assigned Modules
+                        <i class="bi bi-grid-3x3-gap-fill text-primary me-1"></i> 2. Manage Assigned Modules (Optional)
                     </div>
 
                     <div class="row g-4 mb-3">
@@ -106,7 +106,6 @@
                         </div>
                         @endforeach
                     </div>
-                    <div class="col-12 mb-3"><small class="text-danger error" id="modules_error"></small></div>
                     @endif
 
                     <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
@@ -141,7 +140,6 @@
                 let cleanName = nameAttr.replace('[]', '');
                 $('#' + cleanName + '_error').html('');
             }
-            $('#modules_error').html('');
         });
 
         // Form Submit via AJAX

@@ -124,6 +124,7 @@ class UserController extends Controller
          'password'     => 'required|min:6',
          'role'         => 'required|in:2,3',
          'current_wage' => 'nullable|numeric|min:0',
+         'modules'      => 'nullable|array',
          'modules.*'    => 'exists:modules,id',
       ]);
 
@@ -153,7 +154,7 @@ class UserController extends Controller
          ]);
       }
 
-      if ($request->has('modules')) {
+      if ($request->has('modules') && is_array($request->modules)) {
          foreach ($request->modules as $moduleId) {
             UserModule::create([
                'company_id' => $companyId,
@@ -202,12 +203,12 @@ class UserController extends Controller
          }
       }
 
-      // current_wage validation removed from here
       $request->validate([
          'first_name' => 'required|string|max:255',
          'email'      => 'required|email|unique:users,email,' . $id,
          'phone'      => 'required|string|max:20|unique:users,phone,' . $id,
          'role'       => 'required|in:2,3',
+         'modules'    => 'nullable|array',
          'modules.*'  => 'exists:modules,id',
       ]);
 
@@ -221,15 +222,17 @@ class UserController extends Controller
          $user->role = $request->role;
          $user->phone = $request->phone;
          $user->gender = $request->gender;
-         $user->save(); // current_wage update nahi hoga yahan
+         $user->save();
 
          UserModule::where('user_id', $user->id)->delete();
-         foreach ($request->modules as $moduleId) {
-            UserModule::create([
-               'company_id' => $companyId,
-               'user_id'    => $user->id,
-               'module_id'  => $moduleId,
-            ]);
+         if ($request->has('modules') && is_array($request->modules)) {
+            foreach ($request->modules as $moduleId) {
+               UserModule::create([
+                  'company_id' => $companyId,
+                  'user_id'    => $user->id,
+                  'module_id'  => $moduleId,
+               ]);
+            }
          }
 
          return response()->json([
@@ -355,7 +358,7 @@ class UserController extends Controller
    {
       $request->validate([
          'user_id'   => 'required|integer|exists:users,id',
-         'modules'   => 'required|array|min:1',
+         'modules'   => 'nullable|array',
          'modules.*' => 'exists:modules,id',
       ]);
 
@@ -363,12 +366,14 @@ class UserController extends Controller
       $user = User::where('company_id', $companyId)->findOrFail($request->user_id);
 
       UserModule::where('user_id', $user->id)->delete();
-      foreach ($request->modules as $moduleId) {
-         UserModule::create([
-            'company_id' => $companyId,
-            'user_id'    => $user->id,
-            'module_id'  => $moduleId,
-         ]);
+      if ($request->has('modules') && is_array($request->modules)) {
+         foreach ($request->modules as $moduleId) {
+            UserModule::create([
+               'company_id' => $companyId,
+               'user_id'    => $user->id,
+               'module_id'  => $moduleId,
+            ]);
+         }
       }
 
       return response()->json([

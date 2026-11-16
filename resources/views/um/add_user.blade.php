@@ -53,7 +53,7 @@
                             </div>
                             <small class="text-danger error mt-1 d-block" id="gender_error"></small>
                         </div>
-                        <!-- Added Daily Wage Field -->
+                        <!-- Daily Wage Field -->
                         <div class="col-md-4">
                             <div class="input-floating-wrap">
                                 <input type="number" step="1" class="form-control" id="current_wage" name="current_wage" placeholder=" " required>
@@ -80,10 +80,10 @@
                         </div>
                     </div>
 
-                    <!-- 2. Assign Modules Section (Company-wise) -->
+                    <!-- 2. Assign Modules Section (Company-wise) - Optional -->
                     @if(isset($groupedModules) && $groupedModules->isNotEmpty())
                     <div class="section-title mt-4 mb-3 fw-bold text-dark" style="font-size: 15px;">
-                        <i class="bi bi-grid-3x3-gap-fill text-primary me-1"></i> 2. Assign Modules
+                        <i class="bi bi-grid-3x3-gap-fill text-primary me-1"></i> 2. Assign Modules (Optional)
                     </div>
 
                     <div class="row g-4 mb-3">
@@ -100,7 +100,7 @@
                                             <i class="{{ $module->icon ?: 'bi bi-app' }} text-primary me-1"></i> {{ $module->name }}
                                         </label>
                                         <div class="form-check mb-0">
-                                            <input class="form-check-input module-checkbox" type="checkbox" id="gridCheck{{ $module->id }}" value="{{ $module->id }}" name="modules[]" checked>
+                                            <input class="form-check-input module-checkbox" type="checkbox" id="gridCheck{{ $module->id }}" value="{{ $module->id }}" name="modules[]">
                                         </div>
                                     </div>
                                     @endforeach
@@ -109,7 +109,6 @@
                         </div>
                         @endforeach
                     </div>
-                    <div class="col-12 mb-3"><small class="text-danger error" id="modules_error"></small></div>
                     @endif
 
                     <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
@@ -144,7 +143,6 @@
                 let cleanName = nameAttr.replace('[]', '');
                 $('#' + cleanName + '_error').html('');
             }
-            $('#modules_error').html('');
         });
 
         // Form Submit via AJAX
@@ -184,6 +182,7 @@
                 $('#password').addClass('is-invalid');
                 isValid = false;
             }
+
             if (!isValid) {
                 $('html, body').animate({
                     scrollTop: $('.is-invalid').first().offset().top - 100
